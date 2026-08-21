@@ -29,3 +29,15 @@ class Processor():
         tensor.append(np.argmax(logits))
         result = self.decode(tensor)
         print(f"result: {result}")
+
+    def calculate_next_word(self, tensor: list[int]):
+        eos_ids = [151645, 151643]
+        actual_word = None
+        while (actual_word not in eos_ids):
+            logits = self.get_logits(tensor)
+            logits = self.apply_softmax(logits)
+            actual_word = np.argmax(logits)
+            tensor.append(actual_word)
+            print(f"actual word: {actual_word}")
+        result = self.decode(tensor)
+        print(f"result: {result}")
