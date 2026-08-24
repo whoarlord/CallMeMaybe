@@ -2,3 +2,4 @@ pydantic
 numpy
 llm_sdk
 torch
+accelerate
