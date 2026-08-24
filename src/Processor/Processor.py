@@ -24,13 +24,10 @@ class Processor():
 
     def process_prompt(self, prompt: dict):
         tensor = self.encode_tensor(prompt)
-        logits = self.get_logits(tensor)
-        logits = self.apply_softmax(logits)
-        tensor.append(np.argmax(logits))
-        result = self.decode(tensor)
+        result = self.calculate_next_word(tensor)
         print(f"result: {result}")
 
-    def calculate_next_word(self, tensor: list[int]):
+    def calculate_next_word(self, tensor):
         eos_ids = [151645, 151643]
         actual_word = None
         while (actual_word not in eos_ids):
@@ -40,4 +37,4 @@ class Processor():
             tensor.append(actual_word)
             print(f"actual word: {actual_word}")
         result = self.decode(tensor)
-        print(f"result: {result}")
+        return result
