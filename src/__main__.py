@@ -23,7 +23,8 @@ if '__main__' == __name__:
         elif (sys.argv[i] == '--output'):
             arguments.update({'output': sys.argv[i + 1]})
     parser: Parser = Parser(**arguments)
-    processor: Processor = Processor(Small_LLM_Model())
+    llm: Small_LLM_Model = Small_LLM_Model()
+    processor: Processor = Processor(llm)
     prompts: list[dict] = parser.get_input_json()
     for prompt in prompts:
         processor.process_prompt(prompt)
