@@ -32,7 +32,6 @@ class Processor():
 
         Rules:
         - Output ONLY a single valid JSON object. Nothing before it, nothing after it.
-        - Output must ONLY be the function taken as result
         - No markdown code fences (no ```).
         - No explanations, no reasoning, no <think> tags.
         - The JSON must match exactly this schema: {{"function": "<function_name>", "arguments": {{<param_name>: <value>, ...}}}}
@@ -40,10 +39,10 @@ class Processor():
 
         Examples:
         Request: "What is the sum of 10 and 5?"
-        {{"function": "fn_add_numbers", "arguments": {{"a": 10, "b": 5}}}}
+        {{"prompt": "What is the sum of 10 and 5?", "name": "fn_add_numbers", "arguments": {{"a": 10, "b": 5}}}}
 
         Request: "Greet maria"
-        {{"function": "fn_greet", "arguments": {{"name": "maria"}}}}
+        {{"prompt": "Greet maria", "name": "fn_greet", "arguments": {{"name": "maria"}}}}
 
         Now respond to this request:
         Request: "{prompt}"
@@ -67,8 +66,6 @@ class Processor():
             actual_word = np.argmax(logits)
             tensor.append(actual_word)
             tensor_result.append(actual_word)
-            print(f"actual word: {actual_word}")
             iter += 1
-        print(f"last word: {actual_word}")
         result = self.decode(tensor_result)
-        return result
+        return result.strip()

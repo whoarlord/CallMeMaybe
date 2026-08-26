@@ -1,5 +1,6 @@
 import sys
 from . import Small_LLM_Model, Processor, Parser
+import json
 
 
 def check_validation():
@@ -27,7 +28,8 @@ if '__main__' == __name__:
     processor: Processor = Processor(llm)
     prompts: list[dict] = parser.get_input_json()
     functions: list[dict] = parser.get_functions_definition_json()
+    output: list[dict] = []
     for prompt in prompts:
         result = processor.process_prompt(prompt, functions)
         print(result)
-        exit(0)
+        output.append(json.loads(result))
