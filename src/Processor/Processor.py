@@ -46,6 +46,7 @@ class Processor():
             logits = self.get_logits(tensor)
             logits = self.apply_softmax(logits)
             actual_word = np.argmax(logits)
+            tensor.append(actual_word)
             tensor_result.append(actual_word)
             print(f"actual word: {actual_word}")
             iter += 1
