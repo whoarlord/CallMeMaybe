@@ -48,5 +48,6 @@ class Processor():
             tensor.append(actual_word)
             print(f"actual word: {actual_word}")
             iter += 1
+        print(f"last word: {actual_word}")
         result = self.decode(tensor)
         return result
