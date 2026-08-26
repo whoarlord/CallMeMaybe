@@ -60,12 +60,13 @@ class Processor():
         actual_word = None
         iter: int = 0
         tensor_result = []
-        while (actual_word not in eos_ids and iter < 1000):
+        while (actual_word not in eos_ids and iter < 100):
             logits = self.get_logits(tensor)
             logits = self.apply_softmax(logits)
             actual_word = np.argmax(logits)
             tensor.append(actual_word)
             tensor_result.append(actual_word)
             iter += 1
+            print(f"iter: {iter}")
         result = self.decode(tensor_result)
         return result.strip()
