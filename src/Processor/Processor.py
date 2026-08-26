@@ -33,6 +33,7 @@ class Processor():
 
         Rules:
         - Output ONLY a single valid JSON object. Nothing before it, nothing after it.
+        - Output must ONLY be the function taken as result
         - No markdown code fences (no ```).
         - No explanations, no reasoning, no <think> tags.
         - The JSON must match exactly this schema: {{"function": "<function_name>", "arguments": {{<param_name>: <value>, ...}}}}
