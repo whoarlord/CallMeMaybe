@@ -10,7 +10,6 @@ class Processor():
 
     def encode_tensor(self, prompt: dict):
         tensor = self.llm.encode(prompt.get('prompt'))
-        print(tensor)
         return tensor[0].tolist()
 
     def get_logits(self, tensor: list[int]):
@@ -60,13 +59,12 @@ class Processor():
         actual_word = None
         iter: int = 0
         tensor_result = []
-        while (actual_word not in eos_ids and iter < 100):
+        while (actual_word not in eos_ids and iter < 1000):
             logits = self.get_logits(tensor)
             logits = self.apply_softmax(logits)
             actual_word = np.argmax(logits)
             tensor.append(actual_word)
             tensor_result.append(actual_word)
             iter += 1
-            print(f"iter: {iter}")
         result = self.decode(tensor_result)
         return result.strip()

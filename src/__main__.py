@@ -33,3 +33,4 @@ if '__main__' == __name__:
         result = processor.process_prompt(prompt, functions)
         print(result)
         output.append(json.loads(result))
+    parser.load_in_output(output)
