@@ -36,6 +36,7 @@ class Processor():
 
 
     def process_prompt(self, prompt: dict, functions: list[dict]):
+        prompt = self.improve_prompt(prompt, functions)
         tensor = self.encode_tensor(prompt)
         eos_ids = [151645, 151643]
         actual_word = None
