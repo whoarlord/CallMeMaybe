@@ -31,6 +31,8 @@ class Processor():
         Given the user request, respond ONLY with JSON in this exact format:
         {{"function": "<function_name>", "arguments": {{...}}}}
 
+        The answer you give to me must be a json with the specified format and nothing else
+
         User request: {prompt}
         """
 
