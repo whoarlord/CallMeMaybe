@@ -26,6 +26,7 @@ if '__main__' == __name__:
     llm: Small_LLM_Model = Small_LLM_Model()
     processor: Processor = Processor(llm)
     prompts: list[dict] = parser.get_input_json()
+    functions: list[dict] = parser.get_functions_definition_json()
     for prompt in prompts:
-        processor.process_prompt(prompt)
+        processor.process_prompt(prompt, functions)
         exit(0)

@@ -22,7 +22,7 @@ class Parser(BaseModel):
 
     def get_functions_definition_json(self):
         result = None
-        with open(self.input) as file:
+        with open(self.functions_definition) as file:
             result = json.load(file)
         return result
 

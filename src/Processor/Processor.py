@@ -1,5 +1,6 @@
 from .. import Small_LLM_Model
 import numpy as np
+import json
 
 
 class Processor():
@@ -22,12 +23,20 @@ class Processor():
     def decode(self, tensor: list[int]):
         return self.llm.decode(tensor)
 
-    def process_prompt(self, prompt: dict):
-        tensor = self.encode_tensor(prompt)
-        result = self.calculate_next_word(tensor)
-        print(f"result: {result}")
+    def improve_prompt(self, prompt: dict, functions: list[dict]):
+        functions = json.dumps(functions)
+        return f"""You have access to these functions:
+        {functions}
 
-    def calculate_next_word(self, tensor):
+        Given the user request, respond ONLY with JSON in this exact format:
+        {{"function": "<function_name>", "arguments": {{...}}}}
+
+        User request: {prompt}
+        """
+
+
+    def process_prompt(self, prompt: dict, functions: list[dict]):
+        tensor = self.encode_tensor(prompt)
         eos_ids = [151645, 151643]
         actual_word = None
         iter: int = 0
