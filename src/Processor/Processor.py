@@ -25,8 +25,7 @@ class Processor():
 
     def improve_prompt(self, prompt: str, functions: list[dict]):
         functions = json.dumps(functions)
-        return f"""/no_think
-        You are a function-calling engine. You do not explain, you do not think out loud, you only output JSON.
+        return f"""You are a function-calling engine. You do not explain, you do not think out loud, you only output JSON.
 
         Available functions:
         {functions}
@@ -48,6 +47,10 @@ class Processor():
 
         Now respond to this request:
         Request: "{prompt}"
+
+        <think>
+
+        </think>
         """
 
 
