@@ -23,7 +23,7 @@ class Processor():
     def decode(self, tensor: list[int]):
         return self.llm.decode(tensor)
 
-    def improve_prompt(self, prompt: dict, functions: list[dict]):
+    def improve_prompt(self, prompt: str, functions: list[dict]):
         functions = json.dumps(functions)
         return f"""You have access to these functions:
         {functions}
@@ -36,7 +36,7 @@ class Processor():
 
 
     def process_prompt(self, prompt: dict, functions: list[dict]):
-        prompt = self.improve_prompt(prompt, functions)
+        prompt.update({'prompt': self.improve_prompt(prompt.get('prompt'), functions)})
         tensor = self.encode_tensor(prompt)
         eos_ids = [151645, 151643]
         actual_word = None
