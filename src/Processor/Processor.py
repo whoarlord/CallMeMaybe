@@ -25,13 +25,28 @@ class Processor():
 
     def improve_prompt(self, prompt: str, functions: list[dict]):
         functions = json.dumps(functions)
-        return f"""You have access to these functions:
+        return f"""/no_think
+        You are a function-calling engine. You do not explain, you do not think out loud, you only output JSON.
+
+        Available functions:
         {functions}
 
-        You have this prompt inputs to answer: {prompt}
+        Rules:
+        - Output ONLY a single valid JSON object. Nothing before it, nothing after it.
+        - No markdown code fences (no ```).
+        - No explanations, no reasoning, no <think> tags.
+        - The JSON must match exactly this schema: {{"function": "<function_name>", "arguments": {{<param_name>: <value>, ...}}}}
+        - Pick the single function that matches the request. Use only parameter names defined for that function.
 
-        You have to give me a valid JSON output without any other answer with this exact format:
-        {{"function": "<function_name>", "arguments": {{...}}}}
+        Examples:
+        Request: "What is the sum of 10 and 5?"
+        {{"function": "fn_add_numbers", "arguments": {{"a": 10, "b": 5}}}}
+
+        Request: "Greet maria"
+        {{"function": "fn_greet", "arguments": {{"name": "maria"}}}}
+
+        Now respond to this request:
+        Request: "{prompt}"
         """
 
 
