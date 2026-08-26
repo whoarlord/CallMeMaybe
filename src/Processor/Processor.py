@@ -28,12 +28,10 @@ class Processor():
         return f"""You have access to these functions:
         {functions}
 
-        Given the user request, respond ONLY with JSON in this exact format:
+        You have this prompt inputs to answer: {prompt}
+
+        You have to give me a valid JSON output without any other answer with this exact format:
         {{"function": "<function_name>", "arguments": {{...}}}}
-
-        The answer you give to me must be a json with the specified format and nothing else
-
-        User request: {prompt}
         """
 
 
@@ -44,7 +42,7 @@ class Processor():
         actual_word = None
         iter: int = 0
         tensor_result = []
-        while (actual_word not in eos_ids and iter < 100):
+        while (actual_word not in eos_ids and iter < 1000):
             logits = self.get_logits(tensor)
             logits = self.apply_softmax(logits)
             actual_word = np.argmax(logits)
