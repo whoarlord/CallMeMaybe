@@ -33,15 +33,15 @@ class Processor():
         - Output ONLY a single valid JSON object. Nothing before it, nothing after it.
         - No markdown code fences (no ```).
         - No explanations, no reasoning, no <think> tags.
-        - The JSON must match exactly this schema: {{"prompt": "<request_prompt>", "name": "<function_name>", "arguments": {{<param_name>: <value>, ...}}}}
+        - The JSON must match exactly this schema: {"prompt": "<request_prompt>", "name": "<function_name>", "arguments": { < param_name > : <value>, ...} } 
         - Pick the single function that matches the request. Use only parameter names defined for that function.
 
         Examples:
         Request: "What is the sum of 10 and 5?"
-        {{"prompt": "What is the sum of 10 and 5?", "name": "fn_add_numbers", "arguments": {{"a": 10, "b": 5}}}}
+        {"prompt": "What is the sum of 10 and 5?", "name": "fn_add_numbers", "arguments": {"a": 10, "b": 5} } 
 
         Request: "Greet maria"
-        {{"prompt": "Greet maria", "name": "fn_greet", "arguments": {{"name": "maria"}}}}
+        {"prompt": "Greet maria", "name": "fn_greet", "arguments": {"name": "maria"} } 
 
         Now respond to this request:
         Request: "{prompt}"
@@ -51,9 +51,9 @@ class Processor():
         </think>
         """
 
-
     def process_prompt(self, prompt: dict, functions: list[dict]):
-        prompt.update({'prompt': self.improve_prompt(prompt.get('prompt'), functions)})
+        prompt.update({'prompt': self.improve_prompt(
+            prompt.get('prompt'), functions)})
         tensor = self.encode_tensor(prompt)
         eos_ids = [151645, 151643]
         actual_word = None
@@ -61,6 +61,7 @@ class Processor():
         tensor_result = []
         while (actual_word not in eos_ids and iter < 1000):
             logits = self.get_logits(tensor)
+            logits = self.apply_blacklist(logits, blacklist)
             logits = self.apply_softmax(logits)
             actual_word = np.argmax(logits)
             tensor.append(actual_word)
@@ -68,3 +69,18 @@ class Processor():
             iter += 1
         result = self.decode(tensor_result)
         return result.strip()
+    
+
+    """ def calculate_blacklist(vocab):
+        prohibidos = []
+        
+        for token_id in range(tokenizer.vocab_size):
+            texto = tokenizer.decode([token_id])
+            if '"' in texto or '\\' in texto or '\n' in texto or '\t' in texto:
+                prohibidos.append(token_id)
+        return prohibidos """
+
+    @staticmethod
+    def apply_blacklist(logits, blacklist):
+        logits[blacklist] = float('-inf')
+        return logits
