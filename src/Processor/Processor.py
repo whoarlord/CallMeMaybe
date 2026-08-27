@@ -33,15 +33,16 @@ class Processor():
         - Output ONLY a single valid JSON object. Nothing before it, nothing after it.
         - No markdown code fences (no ```).
         - No explanations, no reasoning, no <think> tags.
-        - The JSON must match exactly this schema: {"prompt": "<request_prompt>", "name": "<function_name>", "arguments": { < param_name > : <value>, ...} } 
+        - The JSON must match exactly this schema: 
+        {{"prompt": "<request_prompt>", "name": "<function_name>", "arguments": {{ < param_name > : <value>, ...}} }}
         - Pick the single function that matches the request. Use only parameter names defined for that function.
 
         Examples:
         Request: "What is the sum of 10 and 5?"
-        {"prompt": "What is the sum of 10 and 5?", "name": "fn_add_numbers", "arguments": {"a": 10, "b": 5} } 
+        {"prompt": "What is the sum of 10 and 5?", "name": "fn_add_numbers", "arguments": {"a": 10, "b": 5} }
 
         Request: "Greet maria"
-        {"prompt": "Greet maria", "name": "fn_greet", "arguments": {"name": "maria"} } 
+        {"prompt": "Greet maria", "name": "fn_greet", "arguments": {"name": "maria"} }
 
         Now respond to this request:
         Request: "{prompt}"
@@ -69,7 +70,6 @@ class Processor():
             iter += 1
         result = self.decode(tensor_result)
         return result.strip()
-    
 
     """ def calculate_blacklist(vocab):
         prohibidos = []
