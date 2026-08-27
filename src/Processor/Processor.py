@@ -37,7 +37,7 @@ class Processor():
         - No markdown code fences (no ```).
         - No explanations, no reasoning, no <think> tags.
         - The JSON must match exactly this schema: 
-        {"prompt": "<request_prompt>", "name": "<function_name>", "arguments": { < param_name > : <value>, ...}   } 
+        {{"prompt": "<request_prompt>", "name": "<function_name>", "arguments": {{ < param_name > : <value>, ...}}   }} 
         - Pick the single function that matches the request. Use only parameter names defined for that function.
 
         Examples:
@@ -74,6 +74,7 @@ class Processor():
         result = self.decode(tensor_result)
         return result.strip()
 
+    @staticmethod
     def calculate_blacklist(vocab):
         blacklist = []
         blacklist_chars = ['"', '\\', '\n', '\t']
