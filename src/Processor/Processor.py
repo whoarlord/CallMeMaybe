@@ -89,5 +89,6 @@ class Processor():
         return blacklist
 
     def apply_blacklist(self, logits):
-        logits[self.blacklist] = float('-inf')
+        for index in self.blacklist:
+            logits[index] = float('-inf')
         return logits
