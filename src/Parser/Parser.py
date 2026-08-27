@@ -34,4 +34,4 @@ class Parser(BaseModel):
 
     def load_in_output(self, output: list[dict]):
         with open(self.output, 'w') as file:
-            json.dump(output, file, indent=2);
+            json.dump(output, file, indent=2)

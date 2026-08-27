@@ -7,6 +7,9 @@ class Processor():
 
     def __init__(self, llm: Small_LLM_Model):
         self.llm: Small_LLM_Model = llm
+        vocab = llm.get_path_to_vocab_file()
+        self.blacklist: list[int] = self.calculate_blacklist(vocab)
+        print(f"blacklisty: {self.blacklist}")
 
     def encode_tensor(self, prompt: dict):
         tensor = self.llm.encode(prompt.get('prompt'))
@@ -34,7 +37,7 @@ class Processor():
         - No markdown code fences (no ```).
         - No explanations, no reasoning, no <think> tags.
         - The JSON must match exactly this schema: 
-        {{"prompt": "<request_prompt>", "name": "<function_name>", "arguments": {{ < param_name > : <value>, ...}} }}
+        {"prompt": "<request_prompt>", "name": "<function_name>", "arguments": { < param_name > : <value>, ...}   } 
         - Pick the single function that matches the request. Use only parameter names defined for that function.
 
         Examples:
@@ -62,7 +65,7 @@ class Processor():
         tensor_result = []
         while (actual_word not in eos_ids and iter < 1000):
             logits = self.get_logits(tensor)
-            logits = self.apply_blacklist(logits, blacklist)
+            logits = self.apply_blacklist(logits)
             logits = self.apply_softmax(logits)
             actual_word = np.argmax(logits)
             tensor.append(actual_word)
@@ -71,16 +74,19 @@ class Processor():
         result = self.decode(tensor_result)
         return result.strip()
 
-    """ def calculate_blacklist(vocab):
-        prohibidos = []
-        
-        for token_id in range(tokenizer.vocab_size):
-            texto = tokenizer.decode([token_id])
-            if '"' in texto or '\\' in texto or '\n' in texto or '\t' in texto:
-                prohibidos.append(token_id)
-        return prohibidos """
+    def calculate_blacklist(vocab):
+        blacklist = []
+        blacklist_chars = ['"', '\\', '\n', '\t']
+        vocabulary: dict
 
-    @staticmethod
-    def apply_blacklist(logits, blacklist):
-        logits[blacklist] = float('-inf')
+        with open(vocab, 'r') as file:
+            vocabulary = json.load(file)
+        for char in blacklist_chars:
+            index: int = vocabulary.get(char)
+            if (index is not None):
+                blacklist.append(index)
+        return blacklist
+
+    def apply_blacklist(self, logits):
+        logits[self.blacklist] = float('-inf')
         return logits
