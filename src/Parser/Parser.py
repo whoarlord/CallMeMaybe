@@ -22,16 +22,16 @@ class Parser(BaseModel):
 
     def get_functions_definition_json(self):
         result = None
-        with open(self.functions_definition) as file:
+        with open(self.functions_definition, 'r', encoding='utf-8') as file:
             result = json.load(file)
         return result
 
     def get_input_json(self):
         result = None
-        with open(self.input) as file:
+        with open(self.input, 'r', encoding='utf-8') as file:
             result = json.load(file)
         return result
 
     def load_in_output(self, output: list[dict]):
-        with open(self.output, 'w') as file:
+        with open(self.output, 'w', encoding='utf-8') as file:
             json.dump(output, file, indent=2)

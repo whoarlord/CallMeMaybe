@@ -25,13 +25,13 @@ if '__main__' == __name__:
             arguments.update({'output': sys.argv[i + 1]})
     parser: Parser = Parser(**arguments)
     llm: Small_LLM_Model = Small_LLM_Model()
+    print(f"vocab: {llm.get_path_to_vocab_file()}")
+    print(f"merge: {llm.get_path_to_merges_file()}")
+    print(f"tokenizer: {llm.get_path_to_tokenizer_file()}")
     processor: Processor = Processor(llm)
     prompts: list[dict] = parser.get_input_json()
     functions: list[dict] = parser.get_functions_definition_json()
     output: list[dict] = []
-    print(f"vocab: {llm.get_path_to_vocab_file()}")
-    print(f"merge: {llm.get_path_to_merges_file()}")
-    print(f"tokenizer: {llm.get_path_to_tokenizer_file()}")
     for prompt in prompts:
         result = processor.process_prompt(prompt, functions)
         print(result)

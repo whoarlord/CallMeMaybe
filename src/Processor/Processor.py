@@ -33,19 +33,12 @@ class Processor():
         {functions}
 
         Rules:
-        - Output ONLY a single valid JSON object. Nothing before it, nothing after it.
-        - No markdown code fences (no ```).
-        - No explanations, no reasoning, no <think> tags.
         - The JSON must match exactly this schema: 
         {{"prompt": "<request_prompt>", "name": "<function_name>", "arguments": {{ < param_name > : <value>, ...}}   }} 
-        - Pick the single function that matches the request. Use only parameter names defined for that function.
 
-        Examples:
+        Example:
         Request: "What is the sum of 10 and 5?"
         {{"prompt": "What is the sum of 10 and 5?", "name": "fn_add_numbers", "arguments": {{"a": 10, "b": 5}} }}
-
-        Request: "Greet maria"
-        {{"prompt": "Greet maria", "name": "fn_greet", "arguments": {{"name": "maria"}} }}
 
         Now respond to this request:
         Request: "{prompt}"
@@ -80,7 +73,7 @@ class Processor():
         blacklist_chars = ['"', '\\', '\n', '\t']
         vocabulary: dict
 
-        with open(vocab, 'r') as file:
+        with open(vocab, 'r', encoding='utf-8') as file:
             vocabulary = json.load(file)
         for char in blacklist_chars:
             index: int = vocabulary.get(char)
