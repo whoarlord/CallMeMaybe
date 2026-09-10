@@ -94,7 +94,7 @@ class Processor():
             logits = self.process_valid_logits(logits)
             logits = self.apply_softmax(logits)
             actual_word = np.argmax(logits)
-            printf(f"actual word: {actual_word}")
+            print(f"actual word: {actual_word}")
             tensor.append(actual_word)
             tensor_result.append(actual_word)
             self.json_tokenizer.step(self.vocab.get(actual_word))
