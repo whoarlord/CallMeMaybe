@@ -10,14 +10,7 @@ class Processor():
         self.llm: Small_LLM_Model = llm
         self.vocab: dict[int, str] = self.get_vocab()
         self.eos_ids = [151645, 151643]
-
-        eos_tokens = [
-            self.vocab[eos_id]
-            for eos_id in self.eos_ids
-            if eos_id in self.vocab
-        ]
-
-        self.json_tokenizer = JsonTokenizer(eos_tokens)
+        self.json_tokenizer = JsonTokenizer()
         self._json_mask_cache: dict[tuple, list[int]] = {}
 
     def encode_tensor(self, prompt: dict):
@@ -85,10 +78,15 @@ class Processor():
     
     def process_valid_logits(self, logits: list[float]) -> list[float]:
         valid_logits = set(self.calculate_valid_logits())
+        original_logits = logits.copy()
 
         for i in range(len(logits)):
             if i not in valid_logits:
                 logits[i] = float('-inf')
+
+        if self.json_tokenizer.state == self.json_tokenizer.DONE:
+            for eos_id in self.eos_ids:
+                logits[eos_id] = original_logits[eos_id]
 
         return logits
 
