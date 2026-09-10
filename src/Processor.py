@@ -27,7 +27,7 @@ class Processor():
 
     def get_vocab(self):
         result: dict
-        with self.llm.get_path_to_vocab_file() as file:
+        with open(self.llm.get_path_to_vocab_file(),'r', encoding='utf-8') as file:
             result = json.load(file)
         result = {v: k for k, v in result.items()}
         return result
