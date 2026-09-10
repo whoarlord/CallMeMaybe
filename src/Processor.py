@@ -1,4 +1,5 @@
-from .. import Small_LLM_Model
+from . import Small_LLM_Model
+from . import JsonTokenizer
 import numpy as np
 import json
 
@@ -7,9 +8,8 @@ class Processor():
 
     def __init__(self, llm: Small_LLM_Model):
         self.llm: Small_LLM_Model = llm
-        vocab = llm.get_path_to_vocab_file()
-        self.blacklist: list[int] = self.calculate_blacklist(vocab)
-        print(f"blacklisty: {self.blacklist}")
+        self.vocab: dict[int, str] = json.load(llm.get_path_to_vocab_file())
+        self.json_tokenizer: JsonTokenizer = JsonTokenizer()
 
     def encode_tensor(self, prompt: dict):
         tensor = self.llm.encode(prompt.get('prompt'))
@@ -55,6 +55,25 @@ class Processor():
         </think>
         """
 
+    def token_is_valid(self, token: str):
+        temp_json_tokenizer = self.json_tokenizer.clone()
+        return temp_json_tokenizer.check_token(token)
+
+    def calculate_valid_logits(self):
+        return [tki for tki, tkv in self.vocab
+                if self.token_is_valid(tkv)]
+
+    def process_valid_logits(self, logits: list[float]) -> list[float]:
+        valid_logits = self.calculate_valid_logits()
+        for i in range(len(logits)):
+            if (logits[i] not in valid_logits):
+                logits[i] = float('-inf')
+        return logits
+
+    def process_step(self, tki: int) -> None:
+        return self.vocab.get(tki)
+                
+
     def process_prompt(self, prompt: dict, functions: list[dict]):
         prompt.update({'prompt': self.improve_prompt(
             prompt.get('prompt'), functions)})
@@ -65,30 +84,12 @@ class Processor():
         tensor_result = []
         while (actual_word not in eos_ids and iter < 1000):
             logits = self.get_logits(tensor)
-            logits = self.apply_blacklist(logits)
+            logits = self.process_valid_logits(logits)
             logits = self.apply_softmax(logits)
             actual_word = np.argmax(logits)
             tensor.append(actual_word)
             tensor_result.append(actual_word)
+            self.json_tokenizer.step(self.vocab.get(actual_word))
             iter += 1
         result = self.decode(tensor_result)
         return result.strip()
-
-    @staticmethod
-    def calculate_blacklist(vocab):
-        blacklist = []
-        blacklist_chars = ['"', '\\', '\n', '\t']
-        vocabulary: dict
-
-        with open(vocab, 'r', encoding='utf-8') as file:
-            vocabulary = json.load(file)
-        for char in blacklist_chars:
-            index: int = vocabulary.get(char)
-            if (index is not None):
-                blacklist.append(index)
-        return blacklist
-
-    def apply_blacklist(self, logits):
-        for index in self.blacklist:
-            logits[index] = float('-inf')
-        return logits
