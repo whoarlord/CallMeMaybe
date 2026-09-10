@@ -73,7 +73,7 @@ class Processor():
     def process_valid_logits(self, logits: list[float]) -> list[float]:
         valid_logits = self.calculate_valid_logits()
         for i in range(len(logits)):
-            if (logits[i] not in valid_logits):
+            if (i not in valid_logits):
                 logits[i] = float('-inf')
         return logits
 
@@ -94,6 +94,7 @@ class Processor():
             logits = self.process_valid_logits(logits)
             logits = self.apply_softmax(logits)
             actual_word = np.argmax(logits)
+            printf(f"actual word: {actual_word}")
             tensor.append(actual_word)
             tensor_result.append(actual_word)
             self.json_tokenizer.step(self.vocab.get(actual_word))
