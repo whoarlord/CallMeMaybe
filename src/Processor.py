@@ -8,7 +8,7 @@ class Processor():
 
     def __init__(self, llm: Small_LLM_Model):
         self.llm: Small_LLM_Model = llm
-        self.vocab: dict[int, str] = json.load(llm.get_path_to_vocab_file())
+        self.vocab: dict[int, str] = self.get_vocab()
         self.json_tokenizer: JsonTokenizer = JsonTokenizer()
 
     def encode_tensor(self, prompt: dict):
@@ -24,6 +24,13 @@ class Processor():
 
     def decode(self, tensor: list[int]):
         return self.llm.decode(tensor)
+
+    def get_vocab(self):
+        result: dict
+        with self.llm.get_path_to_vocab_file() as file:
+            result = json.load(file)
+        result = {v: k for k, v in result.items()}
+        return result
 
     def improve_prompt(self, prompt: str, functions: list[dict]):
         functions = json.dumps(functions)
