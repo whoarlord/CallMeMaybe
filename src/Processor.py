@@ -9,7 +9,8 @@ class Processor():
     def __init__(self, llm: Small_LLM_Model):
         self.llm: Small_LLM_Model = llm
         self.vocab: dict[int, str] = self.get_vocab()
-        self.json_tokenizer: JsonTokenizer = JsonTokenizer()
+        self.eos_ids = [151645, 151643]
+        self.json_tokenizer: JsonTokenizer = JsonTokenizer([self.vocab.get(eos_id) for eos_id in self.eos_ids])
         self._json_mask_cache: dict[tuple, list[int]] = {}
 
     def encode_tensor(self, prompt: dict):
@@ -99,11 +100,10 @@ class Processor():
         prompt.update({'prompt': self.improve_prompt(
             prompt.get('prompt'), functions)})
         tensor = self.encode_tensor(prompt)
-        eos_ids = [151645, 151643]
         actual_word = None
         iter: int = 0
         tensor_result = []
-        while (actual_word not in eos_ids and iter < 1000):
+        while (actual_word not in self.eos_ids and iter < 1000):
             logits = self.get_logits(tensor)
             logits = self.process_valid_logits(logits)
             logits = self.apply_softmax(logits)

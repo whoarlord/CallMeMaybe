@@ -2,13 +2,18 @@ class JsonTokenizer:
     START, OBJ_OPEN, KEY_STRING, AFTER_KEY, AFTER_COLON = range(5)
     STRING_VALUE, AFTER_VALUE, NUMBER, ARR_OPEN, DONE = range(5, 10)
 
-    def __init__(self):
+    def __init__(self, eos_ids: list[str]):
         self.state = self.START
         self.stack: list[str] = []
         self.blacklist: set[str] = {'\n', '\t'}
+        self.eos_ids = eos_ids
 
     def check_token(self, token: str) -> bool:
         """Intenta consumir un token completo, carácter por carácter."""
+        if self.state == self.DONE and token not in self.eos_ids:
+            if token not in self.eos_ids:
+                return False
+            return True
         token = token.replace('Ġ', ' ');
         for ch in token:
             if not self.step(ch):
