@@ -107,7 +107,7 @@ class JsonTokenizer:
         return False
 
     def clone(self):
-        result = JsonTokenizer()
+        result = JsonTokenizer(self.eos_ids)
         result.stack = self.stack.copy()
         result.state = self.state
         return result
