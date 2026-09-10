@@ -103,6 +103,6 @@ class JsonTokenizer:
 
     def clone(self):
         result = JsonTokenizer()
-        result.stack = self.stack
+        result.stack = self.stack.copy()
         result.state = self.state
         return result
