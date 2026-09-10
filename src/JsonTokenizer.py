@@ -80,7 +80,7 @@ class JsonTokenizer:
             return False
 
         if s == self.NUMBER:
-            if char.isdigit() or char in ('.', 'e', 'E', '+', '-'):
+            if char.isdigit() or char in ('.'):
                 return True
             return self._close(char)
 
