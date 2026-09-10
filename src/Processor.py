@@ -10,7 +10,14 @@ class Processor():
         self.llm: Small_LLM_Model = llm
         self.vocab: dict[int, str] = self.get_vocab()
         self.eos_ids = [151645, 151643]
-        self.json_tokenizer: JsonTokenizer = JsonTokenizer([self.vocab.get(eos_id) for eos_id in self.eos_ids])
+
+        eos_tokens = [
+            self.vocab[eos_id]
+            for eos_id in self.eos_ids
+            if eos_id in self.vocab
+        ]
+
+        self.json_tokenizer = JsonTokenizer(eos_tokens)
         self._json_mask_cache: dict[tuple, list[int]] = {}
 
     def encode_tensor(self, prompt: dict):
