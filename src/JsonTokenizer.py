@@ -106,3 +106,7 @@ class JsonTokenizer:
         result.stack = self.stack.copy()
         result.state = self.state
         return result
+
+    def print_tokenizer(self):
+        print(f"state: {self.state}")
+        print(f"stack: {self.stack}")
