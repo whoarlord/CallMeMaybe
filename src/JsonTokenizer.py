@@ -111,3 +111,7 @@ class JsonTokenizer:
     def print_tokenizer(self):
         print(f"state: {self.state}")
         print(f"stack: {self.stack}")
+
+    def empty(self):
+        self.stack = []
+        self.state = self.START
