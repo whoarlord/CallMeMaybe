@@ -69,7 +69,7 @@ class Processor():
 
     def calculate_valid_logits(self):
         key = (self.json_tokenizer.state, tuple(self.json_tokenizer.stack))
-        if (not self._json_mask_cache[key]):
+        if (key not in self._json_mask_cache[key]):
             self._json_mask_cache[key] = [tki for tki, tkv in self.vocab.items()
                     if self.token_is_valid(tkv)]
 
