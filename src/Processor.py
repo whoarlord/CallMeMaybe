@@ -86,6 +86,13 @@ class Processor():
 
     def process_step(self, tki: int) -> None:
         return self.vocab.get(tki)
+
+
+    def print_text(self, tensor: list[int]):
+        result = ""
+        for i in tensor:
+            result += self.vocab.get(i)
+        print(f"result: {result}")
                 
 
     def process_prompt(self, prompt: dict, functions: list[dict]):
@@ -101,16 +108,13 @@ class Processor():
             logits = self.process_valid_logits(logits)
             logits = self.apply_softmax(logits)
             actual_word = np.argmax(logits)
-            print("hola")
             print(f"actual word: {actual_word}")
-            print("adios")
             tensor.append(actual_word)
             tensor_result.append(actual_word)
-            print("before adding")
             print(f"before adding token: {self.vocab.get(actual_word)}")
             self.json_tokenizer.check_token(self.vocab.get(actual_word))
-            print("after adding")
             self.json_tokenizer.print_tokenizer()
+            self.print_text(tensor_result)
             iter += 1
         result = self.decode(tensor_result)
         return result.strip()
