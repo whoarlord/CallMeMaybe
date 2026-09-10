@@ -97,7 +97,10 @@ class Processor():
             print(f"actual word: {actual_word}")
             tensor.append(actual_word)
             tensor_result.append(actual_word)
+            print("before adding")
+            print(f"before adding token: {self.vocab.get(actual_word)}")
             self.json_tokenizer.check_token(self.vocab.get(actual_word))
+            print("after adding")
             iter += 1
         result = self.decode(tensor_result)
         return result.strip()
