@@ -11,9 +11,9 @@ class JsonTokenizer:
         """Intenta consumir un token completo, carácter por carácter."""
         if isinstance(token, str):
             token = token.replace('Ġ', ' ')
-        for ch in token:
-            if not self.step(ch):
-                return False
+            for ch in token:
+                if not self.step(ch):
+                    return False
         return True
 
     def step(self, char: str) -> bool:
