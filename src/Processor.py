@@ -10,6 +10,7 @@ class Processor():
         self.llm: Small_LLM_Model = llm
         self.vocab: dict[int, str] = self.get_vocab()
         self.json_tokenizer: JsonTokenizer = JsonTokenizer()
+        self._json_mask_cache: dict[tuple, list[int]] = {}
 
     def encode_tensor(self, prompt: dict):
         tensor = self.llm.encode(prompt.get('prompt'))
@@ -67,14 +68,20 @@ class Processor():
         return temp_json_tokenizer.check_token(token)
 
     def calculate_valid_logits(self):
-        return [tki for tki, tkv in self.vocab.items()
-                if self.token_is_valid(tkv)]
+        key = (self.json_tokenizer.state, tuple(self.json_tokenizer.stack))
+        if (not self._json_mask_cache[key]):
+            self._json_mask_cache[key] = [tki for tki, tkv in self.vocab.items()
+                    if self.token_is_valid(tkv)]
 
+        return self._json_mask_cache[key]
+    
     def process_valid_logits(self, logits: list[float]) -> list[float]:
-        valid_logits = self.calculate_valid_logits()
+        valid_logits = set(self.calculate_valid_logits())
+
         for i in range(len(logits)):
-            if (i not in valid_logits):
+            if i not in valid_logits:
                 logits[i] = float('-inf')
+
         return logits
 
     def process_step(self, tki: int) -> None:
