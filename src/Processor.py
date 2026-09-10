@@ -116,6 +116,8 @@ class Processor():
             print(f"actual word: {actual_word}")
             tensor.append(actual_word)
             tensor_result.append(actual_word)
+            if actual_word in self.eos_ids:
+                break
             print(f"before adding token: {self.vocab.get(actual_word)}")
             self.json_tokenizer.check_token(self.vocab.get(actual_word))
             self.json_tokenizer.print_tokenizer()
