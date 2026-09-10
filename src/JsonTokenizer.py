@@ -7,6 +7,7 @@ class JsonTokenizer:
         self.stack: list[str] = []
         self.blacklist: set[str] = {'\n', '\t'}
         self.eos_ids = eos_ids
+        print(f"eos_ids: {self.eos_ids}")
 
     def check_token(self, token: str) -> bool:
         """Intenta consumir un token completo, carácter por carácter."""
