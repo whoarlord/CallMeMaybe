@@ -67,7 +67,7 @@ class Processor():
         return temp_json_tokenizer.check_token(token)
 
     def calculate_valid_logits(self):
-        return [tki for tki, tkv in self.vocab
+        return [tki for tki, tkv in self.vocab.items()
                 if self.token_is_valid(tkv)]
 
     def process_valid_logits(self, logits: list[float]) -> list[float]:
