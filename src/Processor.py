@@ -123,5 +123,6 @@ class Processor():
             self.json_tokenizer.print_tokenizer()
             self.print_text(tensor_result)
             iter += 1
+        self.json_tokenizer.empty()
         result = self.decode(tensor_result)
         return result.strip()
