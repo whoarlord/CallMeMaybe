@@ -9,15 +9,21 @@ class JsonTokenizer:
 
     def check_token(self, token: str) -> bool:
         """Intenta consumir un token completo, carácter por carácter."""
+        escaped = False
         if isinstance(token, str):
             token = token.replace('Ġ', ' ')
             for ch in token:
-                if not self.step(ch):
+                if not self.step(ch, escaped):
                     return False
+                if (ch == '\\'):
+                    escaped = True
+                else:
+                    escaped = False
         return True
 
-    def step(self, char: str) -> bool:
-        if char in (' ', '\t', '\n') and self.state not in (self.KEY_STRING, self.STRING_VALUE):
+    def step(self, char: str, escaped: bool = False) -> bool:
+        if (char in (' ', '\t', '\n') and self.state not in (self.KEY_STRING, self.STRING_VALUE)
+            or escaped == True):
             return True
 
         s = self.state
