@@ -6,9 +6,10 @@ class JsonTokenizer:
         self.state = self.START
         self.stack: list[str] = []
         self.blacklist: set[str] = {'\n', '\t'}
+        self.escaped: bool = False
 
     def check_token(self, token: str) -> bool:
-        """Intenta consumir un token completo, carácter por carácter."""
+        """Check if a token is valid for a json output"""
         escaped = False
         if isinstance(token, str):
             token = token.replace('Ġ', ' ')
@@ -16,13 +17,16 @@ class JsonTokenizer:
                 if not self.step(ch, escaped):
                     return False
                 if (ch == '\\'):
-                    print(f"ch: {ch}")
                     escaped = True
                 else:
                     escaped = False
         return True
 
     def step(self, char: str, escaped: bool = False) -> bool:
+        if char == '\\' and self.state in (self.KEY_STRING, self.STRING_VALUE):
+            self.escaped = True
+            return True
+        
         if (char in (' ', '\t', '\n') and self.state not in (self.KEY_STRING, self.STRING_VALUE)
             or escaped == True):
             return True
@@ -113,6 +117,7 @@ class JsonTokenizer:
         result = JsonTokenizer()
         result.stack = self.stack.copy()
         result.state = self.state
+        result.escaped = self.escaped
         return result
 
     def print_tokenizer(self):
@@ -122,3 +127,4 @@ class JsonTokenizer:
     def empty(self):
         self.stack = []
         self.state = self.START
+        self.escaped = False
