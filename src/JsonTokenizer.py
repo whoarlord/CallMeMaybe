@@ -13,6 +13,7 @@ class JsonTokenizer:
         if isinstance(token, str):
             token = token.replace('Ġ', ' ')
             for ch in token:
+                print(f"ch: {ch}")
                 if not self.step(ch, escaped):
                     return False
                 if (ch == '\\'):
