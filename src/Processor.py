@@ -2,6 +2,7 @@ from . import Small_LLM_Model
 from . import JsonTokenizer
 import numpy as np
 import json
+import textwrap
 
 
 class Processor():
@@ -29,32 +30,40 @@ class Processor():
 
     def get_vocab(self):
         result: dict
-        with open(self.llm.get_path_to_vocab_file(),'r', encoding='utf-8') as file:
+        vocab_file: str = self.llm.get_path_to_vocab_file()
+        with open(vocab_file, 'r', encoding='utf-8') as file:
             result = json.load(file)
         result = {v: k for k, v in result.items()}
         return result
 
     def improve_prompt(self, prompt: str, functions: list[dict]):
         functions = json.dumps(functions)
-        return f"""You are a function-calling engine. You do not explain, you do not think out loud, you only output JSON.
+        return textwrap.dedent(f"""\
+        You are a function-calling engine. You do not explain,
+        you do not think out loud, you only output JSON.
 
         Available functions:
         {functions}
 
         Rules:
-        - Output ONLY a single valid JSON object. Nothing before it, nothing after it.
+        - Output ONLY a single valid JSON object. Nothing before
+          it, nothing after it.
         - No markdown code fences (no ```).
         - No explanations, no reasoning, no <think> tags.
-        - The JSON must match exactly this schema: 
-        {{"prompt": "<request_prompt>", "name": "<function_name>", "arguments": {{ < param_name > : <value>, ...}}   }} 
-        - Pick the single function that matches the request. Use only parameter names defined for that function.
+        - The JSON must match exactly this schema:
+        {{"prompt": "<request_prompt>", "name": "<function_name>",
+        "arguments": {{"<param_name>": "<value>", ...}}}}
+        - Pick the single function that matches the request. Use
+          only parameter names defined for that function.
 
         Examples:
         Request: "What is the sum of 10 and 5?"
-        {{"prompt": "What is the sum of 10 and 5?", "name": "fn_add_numbers", "arguments": {{"a": 10, "b": 5}} }}
+        {{"prompt": "What is the sum of 10 and 5?",
+        "name": "fn_add_numbers", "arguments": {{"a": 10, "b": 5}}}}
 
         Request: "Greet maria"
-        {{"prompt": "Greet maria", "name": "fn_greet", "arguments": {{"name": "maria"}} }}
+        {{"prompt": "Greet maria", "name": "fn_greet",
+        "arguments": {{"name": "maria"}}}}
 
         Now respond to this request:
         Request: "{prompt}"
@@ -62,7 +71,7 @@ class Processor():
         <think>
 
         </think>
-        """
+        """)
 
     def token_is_valid(self, token: str):
         temp_json_tokenizer = self.json_tokenizer.clone()
@@ -71,11 +80,12 @@ class Processor():
     def calculate_valid_logits(self):
         key = (self.json_tokenizer.state, tuple(self.json_tokenizer.stack))
         if (key not in self._json_mask_cache):
-            self._json_mask_cache[key] = [tki for tki, tkv in self.vocab.items()
-                    if self.token_is_valid(tkv)]
+            self._json_mask_cache[key] = [
+                tki for tki, tkv in self.vocab.items()
+                if self.token_is_valid(tkv)]
 
         return self._json_mask_cache[key]
-    
+
     def process_valid_logits(self, logits: list[float]) -> list[float]:
         valid_logits = set(self.calculate_valid_logits())
         original_logits = logits.copy()
@@ -93,13 +103,11 @@ class Processor():
     def process_step(self, tki: int) -> None:
         return self.vocab.get(tki)
 
-
     def print_text(self, tensor: list[int]):
         result = ""
         for i in tensor:
             result += self.vocab.get(i)
         print(f"result: {result}")
-                
 
     def process_prompt(self, prompt: dict, functions: list[dict]):
         prompt.update({'prompt': self.improve_prompt(
@@ -108,7 +116,7 @@ class Processor():
         actual_word = None
         iter: int = 0
         tensor_result = []
-        while (actual_word not in self.eos_ids and iter < 1000):
+        while (self.json_tokenizer.state != JsonTokenizer.DONE and iter < 500):
             logits = self.get_logits(tensor)
             logits = self.process_valid_logits(logits)
             logits = self.apply_softmax(logits)

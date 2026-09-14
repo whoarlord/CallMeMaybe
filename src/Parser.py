@@ -35,3 +35,20 @@ class Parser(BaseModel):
     def load_in_output(self, output: list[dict]):
         with open(self.output, 'w', encoding='utf-8') as file:
             json.dump(output, file, indent=2)
+
+    def check_files_correctness(self):
+        try:
+            result = self.get_functions_definition_json()
+        catch Exception as e:
+            print("there was an error with the function definition file")
+            return 1
+        try:
+            result = self.get_input_json()
+        catch Exception as e:
+            print("there was an error with the function callings file")
+            return 1
+        try:
+            open(self.input, 'r', encoding='utf-8')
+        catch Exception as e:
+            print("there was an error with the output file")
+            return 1

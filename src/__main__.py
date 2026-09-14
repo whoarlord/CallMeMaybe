@@ -24,6 +24,8 @@ if '__main__' == __name__:
         elif (sys.argv[i] == '--output'):
             arguments.update({'output': sys.argv[i + 1]})
     parser: Parser = Parser(**arguments)
+    if (parser.check_files_correctness()):
+        exit()
     llm: Small_LLM_Model = Small_LLM_Model()
     print(f"vocab: {llm.get_path_to_vocab_file()}")
     print(f"merge: {llm.get_path_to_merges_file()}")
@@ -36,5 +38,4 @@ if '__main__' == __name__:
         result = processor.process_prompt(prompt, functions)
         print(result)
         output.append(json.loads(result))
-        break
     parser.load_in_output(output)
