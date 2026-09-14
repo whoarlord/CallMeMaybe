@@ -39,16 +39,20 @@ class Parser(BaseModel):
     def check_files_correctness(self):
         try:
             result = self.get_functions_definition_json()
-        catch Exception as e:
-            print("there was an error with the function definition file")
+            if (result):
+                print("function definition file is correct")
+        except Exception as e:
+            print(f"there was an error with the function definition file: {e}")
             return 1
         try:
             result = self.get_input_json()
-        catch Exception as e:
-            print("there was an error with the function callings file")
+            if (result):
+                print("function calling file is correct")
+        except Exception as e:
+            print(f"there was an error with the function callings file: {e}")
             return 1
         try:
             open(self.input, 'r', encoding='utf-8')
-        catch Exception as e:
-            print("there was an error with the output file")
+        except Exception as e:
+            print(f"there was an error with the output file: {e}")
             return 1
