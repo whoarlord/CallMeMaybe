@@ -39,38 +39,10 @@ class Processor():
     def improve_prompt(self, prompt: str, functions: list[dict]):
         functions = json.dumps(functions)
         return textwrap.dedent(f"""\
-        You are a function-calling engine. You do not explain,
-        you do not think out loud, you only output JSON.
-
         Available functions:
         {functions}
 
-        Rules:
-        - Output ONLY a single valid JSON object. Nothing before
-          it, nothing after it.
-        - No markdown code fences (no ```).
-        - No explanations, no reasoning, no <think> tags.
-        - The JSON must match exactly this schema:
-        {{"prompt": "<request_prompt>", "name": "<function_name>",
-        "arguments": {{"<param_name>": "<value>", ...}}}}
-        - Pick the single function that matches the request. Use
-          only parameter names defined for that function.
-
-        Examples:
-        Request: "What is the sum of 10 and 5?"
-        {{"prompt": "What is the sum of 10 and 5?",
-        "name": "fn_add_numbers", "arguments": {{"a": 10, "b": 5}}}}
-
-        Request: "Greet maria"
-        {{"prompt": "Greet maria", "name": "fn_greet",
-        "arguments": {{"name": "maria"}}}}
-
-        Now respond to this request:
         Request: "{prompt}"
-
-        <think>
-
-        </think>
         """)
 
     def token_is_valid(self, token: str):
@@ -112,7 +84,10 @@ class Processor():
     def process_prompt(self, prompt: dict, functions: list[dict]):
         prompt.update({'prompt': self.improve_prompt(
             prompt.get('prompt'), functions)})
-        tensor = self.encode_tensor(prompt)
+        start: str = textwrap.dedent("{name: \"" + prompt + "\"")
+        print(f"start: {start}")
+        tensor = self.encode_tensor(prompt + start)
+        tensor_result = self.encode_tensor(start)
         actual_word = None
         iter: int = 0
         tensor_result = []
