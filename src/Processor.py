@@ -85,16 +85,9 @@ class Processor():
             result += self.vocab.get(i)
         print(f"result: {result}")
 
-    @staticmethod
-    def get_prompt_start(prompt: dict):
-        value: str = prompt.get('prompt')
-        result: dict = {"prompt": value}
-        return json.dumps(result)
-
     def process_prompt(self, prompt: dict, functions: list[dict]):
-        start: str = self.get_prompt_start(prompt)
-        prompt_str: str = self.improve_prompt(start, functions)
-        print(start)
+        start: str = '{"name": ' + prompt.get('prompt')
+        prompt_str: str = self.improve_prompt(prompt.get('prompt'), functions)
         print(f"start: {start}")
         tensor = self.encode_tensor(prompt_str + start)
         tensor_result = self.encode_tensor(start)
