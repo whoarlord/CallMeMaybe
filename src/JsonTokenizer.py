@@ -165,6 +165,7 @@ class JsonTokenizer:
         print(f"stack: {self.stack}")
 
     def empty(self):
-        self.stack = []
-        self.state = self.START
+        self.stack = ['{']
+        self.state = self.OBJ_OPEN
         self.escaped = False
+        self.space_before = False
