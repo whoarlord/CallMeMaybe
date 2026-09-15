@@ -14,8 +14,8 @@ class Processor():
         self.json_tokenizer = JsonTokenizer()
         self._json_mask_cache: dict[tuple, list[int]] = {}
 
-    def encode_tensor(self, prompt: dict):
-        tensor = self.llm.encode(prompt.get('prompt'))
+    def encode_tensor(self, prompt: str):
+        tensor = self.llm.encode(prompt)
         return tensor[0].tolist()
 
     def get_logits(self, tensor: list[int]):
@@ -83,11 +83,9 @@ class Processor():
 
     def process_prompt(self, prompt: dict, functions: list[dict]):
         start: str = textwrap.dedent("{name: \"" + prompt.get('prompt') + "\"")
-        prompt.update({'prompt': self.improve_prompt(
-            prompt.get('prompt'), functions)})
-        prompt.update({'prompt': prompt.get('prompt') + start})
+        prompt_str: str = self.improve_prompt(prompt.get('prompt'), functions)
         print(f"start: {start}")
-        tensor = self.encode_tensor(prompt)
+        tensor = self.encode_tensor(prompt_str + start)
         tensor_result = self.encode_tensor(start)
         actual_word = None
         iter: int = 0
