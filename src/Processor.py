@@ -85,8 +85,9 @@ class Processor():
         start: str = textwrap.dedent("{name: \"" + prompt.get('prompt') + "\"")
         prompt.update({'prompt': self.improve_prompt(
             prompt.get('prompt'), functions)})
+        prompt.update({'prompt': prompt.get('prompt') + start})
         print(f"start: {start}")
-        tensor = self.encode_tensor(prompt + start)
+        tensor = self.encode_tensor(prompt)
         tensor_result = self.encode_tensor(start)
         actual_word = None
         iter: int = 0
