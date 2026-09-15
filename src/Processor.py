@@ -86,7 +86,7 @@ class Processor():
         print(f"result: {result}")
 
     @staticmethod
-    def get_start_prompt(self, prompt: dict):
+    def get_start_prompt(prompt: dict):
         value = prompt.get('prompt')
         data = {"name": value}
         return json.dumps(data)
