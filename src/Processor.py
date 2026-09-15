@@ -88,7 +88,7 @@ class Processor():
     def process_prompt(self, prompt: str, functions: list[dict]):
         start: str = prompt[:-1]
         prompt_str: str = self.improve_prompt(prompt, functions)
-        print(f"start: {start}")
+        print(f"start: {start}", indent=2)
         tensor = self.encode_tensor(prompt_str + start)
         tensor_result = self.encode_tensor(start)
         actual_word = None
