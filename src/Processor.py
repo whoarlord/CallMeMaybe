@@ -39,9 +39,13 @@ class Processor():
     def improve_prompt(self, prompt: str, functions: list[dict]):
         functions = json.dumps(functions)
         return textwrap.dedent(f"""\
+        You are a function-calling engine.
         Available functions:
         {functions}
-
+        Example output:
+        Request: "What is the sum of 10 and 5?"
+        {{"prompt": "What is the sum of 10 and 5?",
+        "name": "fn_add_numbers", "arguments": {{"a": 10, "b": 5}}}}
         Request: "{prompt}"
         """)
 
@@ -82,7 +86,7 @@ class Processor():
         print(f"result: {result}")
 
     def process_prompt(self, prompt: dict, functions: list[dict]):
-        start: str = textwrap.dedent("{name: \"" + prompt.get('prompt') + "\"")
+        start: str = "{name: \"" + prompt.get('prompt') + "\""
         prompt_str: str = self.improve_prompt(prompt.get('prompt'), functions)
         print(f"start: {start}")
         tensor = self.encode_tensor(prompt_str + start)
