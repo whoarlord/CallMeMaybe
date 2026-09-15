@@ -35,7 +35,8 @@ if '__main__' == __name__:
     functions: list[dict] = parser.get_functions_definition_json()
     output: list[dict] = []
     for prompt in prompts:
-        result = processor.process_prompt(json.dumps(prompt), functions)
+        result = processor.process_prompt(json.dumps(prompt, indent=2),
+                                          functions)
         print(result)
         output.append(json.loads(result))
     parser.load_in_output(output)
