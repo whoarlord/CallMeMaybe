@@ -85,9 +85,9 @@ class Processor():
             result += self.vocab.get(i)
         print(f"result: {result}")
 
-    def process_prompt(self, prompt: dict, functions: list[dict]):
-        start: str = "{\"name\": " + prompt.get('prompt') + ", "
-        prompt_str: str = self.improve_prompt(prompt.get('prompt'), functions)
+    def process_prompt(self, prompt: str, functions: list[dict]):
+        start: str = "{\"name\": " + prompt + ", "
+        prompt_str: str = self.improve_prompt(prompt, functions)
         print(f"start: {start}")
         tensor = self.encode_tensor(prompt_str + start)
         tensor_result = self.encode_tensor(start)
