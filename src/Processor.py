@@ -86,14 +86,13 @@ class Processor():
         print(f"result: {result}")
 
     def process_prompt(self, prompt: dict, functions: list[dict]):
-        start: str = "{name: \"" + prompt.get('prompt') + "\""
+        start: str = "{name: \"" + prompt.get('prompt') + "\", "
         prompt_str: str = self.improve_prompt(prompt.get('prompt'), functions)
         print(f"start: {start}")
         tensor = self.encode_tensor(prompt_str + start)
         tensor_result = self.encode_tensor(start)
         actual_word = None
         iter: int = 0
-        tensor_result = []
         while (self.json_tokenizer.state != JsonTokenizer.DONE and iter < 500):
             logits = self.get_logits(tensor)
             logits = self.process_valid_logits(logits)

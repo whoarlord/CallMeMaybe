@@ -3,8 +3,8 @@ class JsonTokenizer:
     STRING_VALUE, AFTER_VALUE, NUMBER, ARR_OPEN, DONE = range(5, 10)
 
     def __init__(self):
-        self.state = self.START
-        self.stack: list[str] = []
+        self.state = self.OBJ_OPEN
+        self.stack: list[str] = ['{']
         self.blacklist: set[str] = {'\n', '\t'}
         self.escaped: bool = False
 
