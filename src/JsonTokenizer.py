@@ -7,6 +7,7 @@ class JsonTokenizer:
         self.stack: list[str] = ['{']
         self.blacklist: set[str] = {'\n', '\t'}
         self.escaped: bool = False
+        self.space_before: bool = False
 
     def check_token(self, token: str) -> bool:
         """Check if a token is valid for a json output"""
@@ -20,19 +21,25 @@ class JsonTokenizer:
                     escaped = True
                 else:
                     escaped = False
+                if (ch == ' '):
+                    self.space_before = True
+                elif (self.space_before):
+                    self.space_before = False
         return True
 
     def step(self, char: str, escaped: bool = False) -> bool:
-        if char == '\\' and self.state in (self.KEY_STRING, self.STRING_VALUE):
+        s = self.state
+        if char == '\\' and s in (self.KEY_STRING, self.STRING_VALUE):
             self.escaped = True
             return True
 
-        if (char in (' ', '\t', '\n')
-            and (self.state not in (self.KEY_STRING, self.STRING_VALUE)
-                or escaped is True)):
-            return True
+        if s == self.OBJ_OPEN and char == ' ' and self.space_before:
+            return False
 
-        s = self.state
+        if (char in (' ', '\t', '\n')
+            and s not in (self.KEY_STRING, self.STRING_VALUE)
+                or escaped is True):
+            return True
 
         if s == self.START:
             if char == '{':
@@ -42,6 +49,8 @@ class JsonTokenizer:
             return False
 
         if s == self.OBJ_OPEN:
+            if char == ' ' and self.space_before:
+                return False
             if char == '"':
                 self.state = self.KEY_STRING
                 return True
@@ -148,6 +157,7 @@ class JsonTokenizer:
         result.stack = self.stack.copy()
         result.state = self.state
         result.escaped = self.escaped
+        result.space_before = self.space_before
         return result
 
     def print_tokenizer(self):
