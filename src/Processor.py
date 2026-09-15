@@ -86,7 +86,7 @@ class Processor():
         print(f"result: {result}")
 
     def process_prompt(self, prompt: str, functions: list[dict]):
-        start: str = "{\"name\": " + prompt + ", "
+        start: str = prompt[:-1]
         prompt_str: str = self.improve_prompt(prompt, functions)
         print(f"start: {start}")
         tensor = self.encode_tensor(prompt_str + start)
