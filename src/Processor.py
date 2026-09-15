@@ -82,9 +82,9 @@ class Processor():
         print(f"result: {result}")
 
     def process_prompt(self, prompt: dict, functions: list[dict]):
+        start: str = textwrap.dedent("{name: \"" + prompt.get('prompt') + "\"")
         prompt.update({'prompt': self.improve_prompt(
             prompt.get('prompt'), functions)})
-        start: str = textwrap.dedent("{name: \"" + prompt + "\"")
         print(f"start: {start}")
         tensor = self.encode_tensor(prompt + start)
         tensor_result = self.encode_tensor(start)
