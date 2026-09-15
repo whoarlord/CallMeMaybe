@@ -28,8 +28,8 @@ class JsonTokenizer:
             return True
 
         if (char in (' ', '\t', '\n')
-            and self.state not in (self.KEY_STRING, self.STRING_VALUE)
-                or escaped is True):
+            and (self.state not in (self.KEY_STRING, self.STRING_VALUE)
+                or escaped is True)):
             return True
 
         s = self.state
