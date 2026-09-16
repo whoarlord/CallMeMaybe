@@ -13,23 +13,18 @@ class JsonTokenizer:
 
     def check_token(self, token: str) -> bool:
         """Check if a token is valid for a json output"""
-        escaped = False
         if isinstance(token, str):
             token = token.replace('Ġ', ' ')
             for ch in token:
-                if not self.step(ch, escaped):
+                if not self.step(ch):
                     return False
-                if (ch == '\\'):
-                    escaped = True
-                else:
-                    escaped = False
                 if (ch == ' '):
                     self.space_before = True
                 elif (self.space_before):
                     self.space_before = False
         return True
 
-    def step(self, char: str, escaped: bool = False) -> bool:
+    def step(self, char: str) -> bool:
         s = self.state
         if char == '\\' and s in (self.KEY_STRING, self.STRING_VALUE):
             self.escaped = True
@@ -58,6 +53,10 @@ class JsonTokenizer:
             return False
 
         if s == self.KEY_STRING:
+            if self.escaped:
+                if char not in self.ESCAPE_CHARS:
+                    return False
+                return True
             if char == '"':
                 self.state = self.AFTER_KEY
                 return True
@@ -92,7 +91,7 @@ class JsonTokenizer:
             return False
 
         if s == self.STRING_VALUE:
-            if escaped:
+            if self.escaped:
                 if char not in self.ESCAPE_CHARS:
                     return False
                 return True
