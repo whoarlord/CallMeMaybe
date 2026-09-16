@@ -91,7 +91,7 @@ class Processor():
     @staticmethod
     def get_start_prompt(prompt: dict):
         value = prompt.get('prompt')
-        data = {"name": value}
+        data = {"prompt": value}
         return json.dumps(data)
 
     def process_prompt(self, prompt: dict, functions: list[dict]):
@@ -119,4 +119,5 @@ class Processor():
             iter += 1
         self.json_tokenizer.empty()
         result = self.decode(tensor_result)
+        print(f"tensor result: {result}")
         return result.strip()
