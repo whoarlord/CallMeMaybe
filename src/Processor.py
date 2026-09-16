@@ -67,6 +67,10 @@ class Processor():
 
         Now respond to this request:
         Request: "{prompt}"
+
+        <think>
+
+        </think>
         """)
 
     def token_is_valid(self, token: str):
