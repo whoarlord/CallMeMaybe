@@ -7,6 +7,7 @@ class JsonTokenizer:
     def __init__(self):
         self.state = self.AFTER_COLON
         self.stack: list[str] = ['{']
+        self.blacklist: set[str] = {'\n', '\t'}
         self.escaped: bool = False
         self.space_before: bool = False
 
@@ -60,6 +61,8 @@ class JsonTokenizer:
             if char == '"':
                 self.state = self.AFTER_KEY
                 return True
+            if char in self.blacklist:
+                return False
             return True
 
         if s == self.AFTER_KEY:
@@ -97,6 +100,8 @@ class JsonTokenizer:
             if char == '"':
                 self.state = self.AFTER_VALUE
                 return True
+            if char in self.blacklist:
+                return False
             return True
 
         if s == self.ARR_OPEN:
