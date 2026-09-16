@@ -42,10 +42,10 @@ class Processor():
         You are a function-calling engine.
         Available functions:
         {functions}
-        Example output:
-        Request: "What is the sum of 10 and 5?"
-        {{"prompt": "What is the sum of 10 and 5?",
-        "name": "fn_add_numbers", "arguments": {{"a": 10, "b": 5}}}}
+        Rules:
+        - The JSON must match exactly this schema:
+        {{"prompt": "<request_prompt>", "name": "<function_name>",
+        "arguments": {{"<param_name>": "<value>", ...}}}}
         Request: "{prompt}"
         """)
 
