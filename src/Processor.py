@@ -92,7 +92,7 @@ class Processor():
         return json.dumps(data)
 
     def process_prompt(self, prompt: dict, functions: list[dict]):
-        start: str = self.get_start_prompt(prompt)[:-1] + ', '
+        start: str = self.get_start_prompt(prompt)[:-1] + ', {"name":'
         prompt_str: str = self.improve_prompt(prompt.get('prompt'), functions)
         print(f"start: {start}")
         tensor = self.encode_tensor(prompt_str + start)
