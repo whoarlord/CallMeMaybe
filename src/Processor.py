@@ -48,11 +48,6 @@ class Processor():
         {{"prompt": "<request_prompt>", "name": "<function_name>",
         "arguments": {{"<param_name>": "<value>", ...}}}}
 
-        Example:
-        Request: "What is the sum of 10 and 5?"
-        {{"prompt": "What is the sum of 10 and 5?",
-        "name": "fn_add_numbers", "arguments": {{"a": 10, "b": 5}}}}
-
         Now respond to this request:
         Request: "{prompt}"
         """)
