@@ -29,6 +29,8 @@ class JsonTokenizer:
         if char == '\\' and s in (self.KEY_STRING, self.STRING_VALUE):
             self.escaped = True
             return True
+        else:
+            self.escaped = False
 
         if s == self.OBJ_OPEN and char == ' ' and self.space_before:
             return False
