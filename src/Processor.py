@@ -96,7 +96,7 @@ class Processor():
     @staticmethod
     def get_start_prompt(prompt: dict):
         value = prompt.get('prompt')
-        data = {"name": value}
+        data = {"prompt": value}
         return json.dumps(data)
 
     def process_prompt(self, prompt: dict, functions: list[dict]):
