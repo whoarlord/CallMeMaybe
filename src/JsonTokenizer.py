@@ -4,7 +4,7 @@ class JsonTokenizer:
 
     def __init__(self):
         self.state = self.AFTER_COLON
-        self.stack: list[str] = ['{', '{']
+        self.stack: list[str] = ['{']
         self.blacklist: set[str] = {'\n', '\t'}
         self.escaped: bool = False
         self.space_before: bool = False
