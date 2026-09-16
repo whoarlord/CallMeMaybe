@@ -97,8 +97,6 @@ class JsonTokenizer:
             if char == '"':
                 self.state = self.AFTER_VALUE
                 return True
-            if char in self.blacklist:
-                return False
             return True
 
         if s == self.ARR_OPEN:
