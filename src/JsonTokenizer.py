@@ -38,9 +38,6 @@ class JsonTokenizer:
         if s == self.OBJ_OPEN and char == ' ' and self.space_before:
             return False
 
-        if escaped is True and s in (self.KEY_STRING, self.STRING_VALUE):
-            return True
-
         if s == self.START:
             if char == '{':
                 self.stack.append('{')
