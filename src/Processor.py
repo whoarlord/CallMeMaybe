@@ -48,6 +48,11 @@ class Processor():
         {{"prompt": "<request_prompt>", "name": "<function_name>",
         "arguments": {{"<param_name>": "<value>", ...}}}}
 
+        Example:
+        Request: "What is the sum of 10 and 5?"
+        {{"prompt": "What is the sum of 10 and 5?",
+        "name": "fn_add_numbers", "arguments": {{"a": 10, "b": 5}}}}
+
         Now respond to this request:
         Request: "{prompt}"
         """)
@@ -91,7 +96,7 @@ class Processor():
     @staticmethod
     def get_start_prompt(prompt: dict):
         value = prompt.get('prompt')
-        data = {"prompt": value}
+        data = {"name": value}
         return json.dumps(data)
 
     def process_prompt(self, prompt: dict, functions: list[dict]):
@@ -119,5 +124,4 @@ class Processor():
             iter += 1
         self.json_tokenizer.empty()
         result = self.decode(tensor_result)
-        print(f"tensor result: {result}")
         return result.strip()
