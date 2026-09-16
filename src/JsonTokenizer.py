@@ -2,6 +2,8 @@ class JsonTokenizer:
     START, OBJ_OPEN, KEY_STRING, AFTER_KEY, AFTER_COLON = range(5)
     STRING_VALUE, AFTER_VALUE, NUMBER, ARR_OPEN, DONE = range(5, 10)
 
+    ESCAPE_CHARS = {'"', '\\', '/', 'b', 'f', 'n', 'r', 't', 'u'}
+
     def __init__(self):
         self.state = self.AFTER_COLON
         self.stack: list[str] = ['{']
@@ -11,23 +13,18 @@ class JsonTokenizer:
 
     def check_token(self, token: str) -> bool:
         """Check if a token is valid for a json output"""
-        escaped = False
         if isinstance(token, str):
             token = token.replace('Ġ', ' ')
             for ch in token:
-                if not self.step(ch, escaped):
+                if not self.step(ch):
                     return False
-                if (ch == '\\'):
-                    escaped = True
-                else:
-                    escaped = False
                 if (ch == ' '):
                     self.space_before = True
                 elif (self.space_before):
                     self.space_before = False
         return True
 
-    def step(self, char: str, escaped: bool = False) -> bool:
+    def step(self, char: str) -> bool:
         s = self.state
         if char == '\\' and s in (self.KEY_STRING, self.STRING_VALUE):
             self.escaped = True
@@ -35,11 +32,6 @@ class JsonTokenizer:
 
         if s == self.OBJ_OPEN and char == ' ' and self.space_before:
             return False
-
-        if (char in (' ', '\t', '\n')
-            and s not in (self.KEY_STRING, self.STRING_VALUE)
-                or escaped is True):
-            return True
 
         if s == self.START:
             if char == '{':
@@ -61,6 +53,11 @@ class JsonTokenizer:
             return False
 
         if s == self.KEY_STRING:
+            if self.escaped:
+                self.escaped = False
+                if char not in self.ESCAPE_CHARS:
+                    return False
+                return True
             if char == '"':
                 self.state = self.AFTER_KEY
                 return True
@@ -95,6 +92,11 @@ class JsonTokenizer:
             return False
 
         if s == self.STRING_VALUE:
+            if self.escaped:
+                self.escaped = False
+                if char not in self.ESCAPE_CHARS:
+                    return False
+                return True
             if char == '"':
                 self.state = self.AFTER_VALUE
                 return True
@@ -166,6 +168,6 @@ class JsonTokenizer:
 
     def empty(self):
         self.stack = ['{']
-        self.state = self.OBJ_OPEN
+        self.state = self.AFTER_COLON
         self.escaped = False
         self.space_before = False
