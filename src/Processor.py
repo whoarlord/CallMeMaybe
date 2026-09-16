@@ -46,6 +46,7 @@ class Processor():
         - The JSON must match exactly this schema:
         {{"prompt": "<request_prompt>", "name": "<function_name>",
         "arguments": {{"<param_name>": "<value>", ...}}}}
+        Now respond to this request:
         Request: "{prompt}"
         """)
 
