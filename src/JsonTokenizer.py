@@ -166,6 +166,6 @@ class JsonTokenizer:
 
     def empty(self):
         self.stack = ['{']
-        self.state = self.OBJ_OPEN
+        self.state = self.AFTER_COLON
         self.escaped = False
         self.space_before = False
