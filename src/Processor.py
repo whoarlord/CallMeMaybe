@@ -47,6 +47,11 @@ class Processor():
         {{"prompt": "<request_prompt>", "name": "<function_name>",
         "parameters": {{"<param_name>": "<value>", ...}}}}
         - if the parameter type is float you must return a float
+        - Only include parameters that are explicitly defined in the
+        function's schema. Never invent or infer extra parameters.
+        - Copy string values EXACTLY as they appear in the request, including
+        any placeholders like {{name}} or {{user}}. Do not resolve, substitute,
+        or rewrite them.
 
         Now respond to this request:
         Request: "{prompt}"
