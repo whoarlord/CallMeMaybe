@@ -52,6 +52,10 @@ class Processor():
         - Copy string values EXACTLY as they appear in the request, including
         any placeholders like {{name}} or {{user}}. Do not resolve, substitute,
         or rewrite them.
+        - Parameter values must contain ONLY the relevant content, excluding
+        any leading instruction/verb phrase from the request
+        (e.g. "Format template:", "Say hello to:"). The "prompt"
+        field keeps the full original text; parameters do not.
 
         Now respond to this request:
         Request: "{prompt}"
