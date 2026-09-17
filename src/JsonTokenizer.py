@@ -24,10 +24,8 @@ class JsonTokenizer:
         return True
 
     def step(self, char: str, escaped: bool = False) -> bool:
-        """ if (char in (' ', '\t', '\n')
-            and self.state not in (self.KEY_STRING, self.STRING_VALUE)
-                or escaped is True):
-            return True """
+        if (char == ' '):
+            return True
 
         s = self.state
 
