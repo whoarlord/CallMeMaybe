@@ -12,7 +12,7 @@ class JsonTokenizer:
 
     def check_token(self, token: str) -> bool:
         """Check if a token is valid for a json output"""
-        escaped = False
+        escaped = self.escaped
         if isinstance(token, str):
             token = token.replace('Ġ', ' ')
             for ch in token:
@@ -24,7 +24,8 @@ class JsonTokenizer:
         return True
 
     def step(self, char: str, escaped: bool = False) -> bool:
-        if (char == ' '):
+        if (char in (' ', '\t', '\n')
+                and self.state not in (self.KEY_STRING, self.STRING_VALUE)):
             return True
 
         s = self.state
