@@ -153,6 +153,7 @@ class JsonTokenizer:
     def print_tokenizer(self):
         print(f"state: {self.state}")
         print(f"stack: {self.stack}")
+        print(f"escaped: {self.escaped}")
 
     def empty(self):
         self.state = self.AFTER_COLON
