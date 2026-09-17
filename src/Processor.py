@@ -47,15 +47,11 @@ class Processor():
         {{"prompt": "<request_prompt>", "name": "<function_name>",
         "parameters": {{"<param_name>": "<value>", ...}}}}
         - if the parameter type is float you must return a float
-        - Only include parameters that are explicitly defined in the
-        function's schema. Never invent or infer extra parameters.
-        - Copy string values EXACTLY as they appear in the request, including
-        any placeholders like {{name}} or {{user}}. Do not resolve, substitute,
-        or rewrite them.
-        - Parameter values must contain ONLY the relevant content, excluding
-        any leading instruction/verb phrase from the request
-        (e.g. "Format template:", "Say hello to:"). The "prompt"
-        field keeps the full original text; parameters do not.
+        - Strip any leading instruction/verb phrase from parameter values (e.g.
+        "Format template:", "Say hello to:"). The "prompt" field always keeps
+        the full original text; parameter values do not include that prefix.
+        - Example: request 'Format template: Say "hello" to {{name}}' →
+        parameters = {{"template": "Say \\"hello\\" to {{name}}"}}
 
         Now respond to this request:
         Request: "{prompt}"
