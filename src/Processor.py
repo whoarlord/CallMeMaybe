@@ -39,6 +39,26 @@ class Processor():
     def improve_prompt(self, prompt: str, functions: list[dict]):
         functions = json.dumps(functions)
         return textwrap.dedent(f"""\
+        Available functions:
+        {functions}
+
+        Rules:
+        - The JSON must match exactly this schema:
+        {{"prompt": "<request_prompt>", "name": "<function_name>",
+        "arguments": {{"<param_name>": "<value>", ...}}}}
+        - Pick the single function that matches the request. Use
+          only parameter names defined for that function.
+
+        Example:
+        Request: "What is the sum of 10 and 5?"
+        {{"prompt": "What is the sum of 10 and 5?",
+        "name": "fn_add_numbers", "arguments": {{"a": 10, "b": 5}}}}
+
+        Now respond to this request:
+        Request: "{prompt}"
+        
+        """)
+        return textwrap.dedent(f"""\
         You are a function-calling engine. You do not explain,
         you do not think out loud, you only output JSON.
 
@@ -117,6 +137,7 @@ class Processor():
 
     def process_prompt(self, prompt: dict, functions: list[dict]):
         start: str = self.get_start_prompt(prompt)[:-1] + ', "name":'
+        # start: str = ''
         prompt_str: str = self.improve_prompt(prompt.get('prompt'), functions)
         print(f"start: {start}")
         tensor = self.encode_tensor(prompt_str + start)

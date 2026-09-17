@@ -1,10 +1,10 @@
 [
   {
-    "prompt": "What is the sum of 2 and 2 + 1?",
+    "prompt": "\\What is the sum of 2 and 2 + 1?\\",
     "name": "fn_add_numbers",
     "arguments": {
       "a": 2,
-      "b": 2
+      "b": 1
     }
   },
   {
