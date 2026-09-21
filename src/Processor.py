@@ -1,5 +1,5 @@
 from . import Small_LLM_Model
-from . import JsonTokenizer
+from .Constraineds import FunctionCallTokenizer
 import numpy as np
 import json
 import textwrap
@@ -11,7 +11,7 @@ class Processor():
         self.llm: Small_LLM_Model = llm
         self.vocab: dict[int, str] = self.get_vocab()
         self.eos_ids = [151645, 151643]
-        self.json_tokenizer = JsonTokenizer()
+        self.func_tokenizer = FunctionCallTokenizer()
         self._json_mask_cache: dict[tuple, list[int]] = {}
 
     def encode_tensor(self, prompt: str):
@@ -106,7 +106,7 @@ class Processor():
         tensor_result: list[int] = self.encode_tensor(start)
         actual_word = None
         iter: int = 0
-        while (self.json_tokenizer.state != JsonTokenizer.DONE and iter < 500):
+        while (self.json_tokenizer.state != func_tokenizer.DONE and iter < 500):
             logits = self.get_logits(tensor)
             logits = self.process_valid_logits(logits)
             logits = self.apply_softmax(logits)

@@ -65,3 +65,5 @@ class FunctionCallGrammar:
             return self.active_string_constraint.close()
         return True
 
+    def check_step(self, string: str):
+        return self.json.check_token(str)
