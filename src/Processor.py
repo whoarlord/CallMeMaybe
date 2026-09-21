@@ -102,8 +102,8 @@ class Processor():
         # start: str = ''
         prompt_str: str = self.improve_prompt(prompt.get('prompt'), functions)
         print(f"start: {start}")
-        tensor = self.encode_tensor(prompt_str + start)
-        tensor_result = self.encode_tensor(start)
+        tensor: list[int] = self.encode_tensor(prompt_str + start)
+        tensor_result: list[int] = self.encode_tensor(start)
         actual_word = None
         iter: int = 0
         while (self.json_tokenizer.state != JsonTokenizer.DONE and iter < 500):
