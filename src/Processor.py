@@ -1,5 +1,5 @@
 from . import Small_LLM_Model
-from .Constraineds import FunctionCallTokenizer
+from .Constraineds import (FunctionCallGrammar, FunctionSchema)
 import numpy as np
 import json
 import textwrap
@@ -11,7 +11,6 @@ class Processor():
         self.llm: Small_LLM_Model = llm
         self.vocab: dict[int, str] = self.get_vocab()
         self.eos_ids = [151645, 151643]
-        self.func_tokenizer = FunctionCallTokenizer()
         self._json_mask_cache: dict[tuple, list[int]] = {}
 
     def encode_tensor(self, prompt: str):
@@ -55,28 +54,26 @@ class Processor():
 
         """)
 
-    def token_is_valid(self, token: str):
-        temp_json_tokenizer = self.json_tokenizer.clone()
-        return temp_json_tokenizer.check_token(token)
-
-    def calculate_valid_logits(self):
-        key = (self.json_tokenizer.state, tuple(self.json_tokenizer.stack))
+    def calculate_valid_logits(self, func_tokenizer: FunctionCallGrammar):
+        key = (func_tokenizer.json.state, tuple(func_tokenizer.json.stack))
         if (key not in self._json_mask_cache):
             self._json_mask_cache[key] = [
                 tki for tki, tkv in self.vocab.items()
-                if self.token_is_valid(tkv)]
+                if func_tokenizer.check_step(tkv)]
 
         return self._json_mask_cache[key]
 
-    def process_valid_logits(self, logits: list[float]) -> list[float]:
-        valid_logits = set(self.calculate_valid_logits())
+    def process_valid_logits(self, logits: list[float],
+                             func_tokenizer: FunctionCallGrammar
+                             ) -> list[float]:
+        valid_logits = set(self.calculate_valid_logits(func_tokenizer))
         original_logits = logits.copy()
 
         for i in range(len(logits)):
             if i not in valid_logits:
                 logits[i] = float('-inf')
 
-        if self.json_tokenizer.state == self.json_tokenizer.DONE:
+        if func_tokenizer.json.state == func_tokenizer.json.DONE:
             for eos_id in self.eos_ids:
                 logits[eos_id] = original_logits[eos_id]
 
@@ -91,6 +88,13 @@ class Processor():
             result += self.vocab.get(i)
         print(f"result: {result}")
 
+    def build_func_tokenizer(self, functions: list[dict]) -> FunctionCallGrammar:
+        schemas = {
+            fn["name"]: FunctionSchema.from_dict(fn)
+            for fn in functions
+        }
+        return FunctionCallGrammar(schemas)
+
     @staticmethod
     def get_start_prompt(prompt: dict):
         value = prompt.get('prompt')
@@ -99,16 +103,16 @@ class Processor():
 
     def process_prompt(self, prompt: dict, functions: list[dict]):
         start: str = self.get_start_prompt(prompt)[:-1] + ', "name":'
-        # start: str = ''
         prompt_str: str = self.improve_prompt(prompt.get('prompt'), functions)
         print(f"start: {start}")
         tensor: list[int] = self.encode_tensor(prompt_str + start)
         tensor_result: list[int] = self.encode_tensor(start)
         actual_word = None
         iter: int = 0
-        while (self.json_tokenizer.state != func_tokenizer.DONE and iter < 500):
+        func_tokenizer: FunctionCallGrammar = self.build_func_tokenizer(functions)
+        while (func_tokenizer.json.state != func_tokenizer.json.DONE and iter < 500):
             logits = self.get_logits(tensor)
-            logits = self.process_valid_logits(logits)
+            logits = self.process_valid_logits(logits, func_tokenizer)
             logits = self.apply_softmax(logits)
             actual_word = np.argmax(logits)
             print(f"actual word: {actual_word}")
@@ -117,10 +121,8 @@ class Processor():
             if actual_word in self.eos_ids:
                 break
             print(f"before adding token: {self.vocab.get(actual_word)}")
-            self.json_tokenizer.check_token(self.vocab.get(actual_word))
-            self.json_tokenizer.print_tokenizer()
+            func_tokenizer.apply_token(self.vocab.get(actual_word))
             self.print_text(tensor_result)
             iter += 1
-        self.json_tokenizer.empty()
         result = self.decode(tensor_result)
         return result.strip()

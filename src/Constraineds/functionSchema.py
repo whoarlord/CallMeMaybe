@@ -2,16 +2,25 @@ from pydantic import BaseModel, field_validator
 from enum import Enum
 
 
-class ParamType(Enum):
-    STRING = "string", "str"
-    NUMBER = "number", "num"
-    BOOLEAN = "boolean", "bool"
-    INT = "int", "integer"
+class ParamType(str, Enum):
+    STRING = "string"
+    NUMBER = "number"
+    BOOLEAN = "boolean"
+    INT = "integer"
+
+    @classmethod
+    def _missing_(cls, value):
+        aliases = {
+            "str": cls.STRING,
+            "num": cls.NUMBER,
+            "bool": cls.BOOLEAN,
+            "int": cls.INT,
+        }
+        return aliases.get(value)
 
 
 class ParamSchema(BaseModel):
     type: ParamType
-    name: str
 
 
 class FunctionSchema(BaseModel):
@@ -23,7 +32,7 @@ class FunctionSchema(BaseModel):
         props = fn.get("parameters", {})
 
         params: dict[str, ParamSchema] = {}
-        for pname, pdef in props.values():
+        for pname, pdef in props.items():
             raw_type: str = pdef.get("type", "string").lower()
 
             params[pname] = ParamSchema(type=ParamType(raw_type))

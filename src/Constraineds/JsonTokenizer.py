@@ -7,18 +7,17 @@ class JsonTokenizer:
     def __init__(self,
                  on_key_closed: callable,
                  on_value_enter: callable,
-                 on_string_char: callable, 
-                 on_string_closed: callable):
+                 on_value_char: callable, 
+                 on_value_closed: callable):
         self._on_key_closed = on_key_closed
         self._on_value_enter = on_value_enter
-        self._on_string_char = on_string_char
-        self._on_string_closed = on_string_closed
+        self._on_value_char = on_value_char
+        self._on_value_closed = on_value_closed
         self._key_buffer = ""
         self.state = self.AFTER_COLON
         self.stack: list[str] = ['{']
         self.blacklist: set[str] = {'\n', '\t'}
         self.escaped: bool = False
-        self.actual_parameter_name: str = ''
 
     def check_token(self, token: str) -> bool:
         """Check if a token is valid for a json output"""
@@ -100,18 +99,16 @@ class JsonTokenizer:
             return False
 
         if s == self.STRING_VALUE:
-            if not self.function_name_is_ready and char != '"':
-                self.function_name += char
             if escaped:
                 if char not in self.ESCAPE_CHARS:
                     return False
                 return True
             if char == '"':
-                if self._on_string_closed and not self._on_string_closed():
+                if self._on_value_closed and not self._on_value_closed():
                     return False
                 self.state = self.AFTER_VALUE
                 return True
-            if self._on_string_char and not self._on_string_char(char):
+            if self._on_value_char and not self._on_value_char(char):
                 return False
             if char in self.blacklist:
                 return False
@@ -139,6 +136,8 @@ class JsonTokenizer:
             return False
 
         if s == self.NUMBER:
+            if self._on_value_char and not self._on_value_char(char):
+                return False
             if char.isdigit() or char in ('.'):
                 return True
             return self._close(char)
@@ -168,23 +167,18 @@ class JsonTokenizer:
         return False
 
     def clone(self):
-        result = JsonTokenizer()
+        result = JsonTokenizer(
+            self._on_key_closed,
+            self._on_value_enter,
+            self._on_value_char,
+            self._on_value_closed
+        )
         result.stack = self.stack.copy()
         result.state = self.state
         result.escaped = self.escaped
-        result.function_name_is_ready = self.function_name_is_ready
-        result.function_name = self.function_name
         return result
 
     def print_tokenizer(self):
         print(f"state: {self.state}")
         print(f"stack: {self.stack}")
         print(f"escaped: {self.escaped}")
-        print(f"function name: {self.function_name}")
-
-    def empty(self):
-        self.state = self.AFTER_COLON
-        self.stack: list[str] = ['{']
-        self.escaped = False
-        self.function_name = ''
-        self.function_name_is_ready = False
