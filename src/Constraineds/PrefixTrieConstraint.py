@@ -30,7 +30,6 @@ class PrefixTrieConstraint(ValueConstraint):
         self.buffer = ""
 
     def reset(self) -> None:
-        print("reseting")
         self.buffer = ""
 
     def feed(self, char: str) -> bool:
@@ -38,8 +37,6 @@ class PrefixTrieConstraint(ValueConstraint):
         if not any(c.startswith(candidate) for c in self.candidates):
             return False
         self.buffer = candidate
-        print(f"char feeded: {char}")
-        print(f"candidate: {candidate}")
         return True
 
     def close(self) -> bool:

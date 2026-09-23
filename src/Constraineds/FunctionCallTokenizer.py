@@ -9,7 +9,7 @@ from .PrefixTrieConstraint import (
 
 class Phase(Enum):
     EXPECT_NAME = 1
-    IN_ARGUMENTS = 2
+    IN_PARAMETERS = 2
     OTHER = 3
 
 
@@ -32,9 +32,9 @@ class FunctionCallGrammar:
         self.active_value_constraint = None
 
     def _on_key_closed(self, key: str) -> None:
-        if key == "arguments":
-            self.phase = Phase.IN_ARGUMENTS
-        elif self.phase == Phase.IN_ARGUMENTS:
+        if key == "parameters":
+            self.phase = Phase.IN_PARAMETERS
+        elif self.phase == Phase.IN_PARAMETERS:
             self.current_param = key
 
     def _constraint_for_param(self, schema_type: str, kind: str):
@@ -57,7 +57,8 @@ class FunctionCallGrammar:
             self.active_value_constraint = self.name_constraint
             return kind == 'string'
 
-        if self.phase == Phase.IN_ARGUMENTS:
+        if self.phase == Phase.IN_PARAMETERS:
+            print(f"KIND: {kind}")
             if self.active_schema is None:
                 return False
             schema = self.active_schema.parameters.get(self.current_param)
@@ -123,6 +124,5 @@ class FunctionCallGrammar:
     def print_buffer(self):
         if (self.active_value_constraint is not None):
             print(f"active value: {self.active_value_constraint.buffer}")
-            print(f"candidate: {self.active_value_constraint.candidates}")
         else:
             print("active value is none")

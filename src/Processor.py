@@ -55,7 +55,14 @@ class Processor():
         """)
 
     def calculate_valid_logits(self, func_tokenizer: FunctionCallGrammar):
-        key = (func_tokenizer.json.state, tuple(func_tokenizer.json.stack))
+        key = (
+            func_tokenizer.json.state,
+            tuple(func_tokenizer.json.stack),
+            func_tokenizer.phase,
+            func_tokenizer.current_param,
+            getattr(func_tokenizer.active_value_constraint, "buffer", None),
+            getattr(func_tokenizer.active_schema, "name", None),
+        )
         if (key not in self._json_mask_cache):
             self._json_mask_cache[key] = [
                 tki for tki, tkv in self.vocab.items()
@@ -123,7 +130,7 @@ class Processor():
                 break
             print(f"before adding token: {self.vocab.get(actual_word)}")
             func_tokenizer.apply_token(self.vocab.get(actual_word))
-            func_tokenizer.print_buffer()
+            # func_tokenizer.print_buffer()
             self.print_text(tensor_result)
             iter += 1
         result = self.decode(tensor_result)

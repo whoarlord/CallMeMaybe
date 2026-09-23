@@ -136,10 +136,12 @@ class JsonTokenizer:
             return False
 
         if s == self.NUMBER:
-            if self._on_value_char and not self._on_value_char(char):
-                return False
-            if char.isdigit() or char in ('.'):
+            if char.isdigit() or char == '.':
+                if self._on_value_char and not self._on_value_char(char):
+                    return False
                 return True
+            if self._on_value_closed and not self._on_value_closed():
+                return False
             return self._close(char)
 
         if s == self.AFTER_VALUE:
