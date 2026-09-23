@@ -72,8 +72,10 @@ class NumberConstraint(ValueConstraint):
 
     def close(self) -> bool:
         stripped = self.buffer.lstrip('-')
-        return ((stripped != "" and stripped != ".") or
-                (self.allow_decimal and stripped.find('.') != -1))
+        if (self.allow_decimal):
+            return (stripped != "" and stripped != "."
+                    and stripped.find('.') != -1)
+        return stripped != ""
 
     def clone(self):
         clone = NumberConstraint(self.allow_decimal)
