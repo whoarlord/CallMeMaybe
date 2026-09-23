@@ -16,6 +16,10 @@ class ValueConstraint(ABC):
         """Se llama al cerrarse el valor (comilla, o fin de NUMBER)."""
         ...
 
+    @abstractmethod
+    def clone(self):
+        ...
+
 
 class PrefixTrieConstraint(ValueConstraint):
     """Restringe a que el buffer sea siempre prefijo de al menos un
@@ -26,6 +30,7 @@ class PrefixTrieConstraint(ValueConstraint):
         self.buffer = ""
 
     def reset(self) -> None:
+        print("reseting")
         self.buffer = ""
 
     def feed(self, char: str) -> bool:
@@ -33,10 +38,17 @@ class PrefixTrieConstraint(ValueConstraint):
         if not any(c.startswith(candidate) for c in self.candidates):
             return False
         self.buffer = candidate
+        print(f"char feeded: {char}")
+        print(f"candidate: {candidate}")
         return True
 
     def close(self) -> bool:
         return self.buffer in self.candidates
+
+    def clone(self):
+        clone = PrefixTrieConstraint(self.candidates)
+        clone.buffer = self.buffer
+        return clone
 
 
 class NumberConstraint(ValueConstraint):
@@ -66,6 +78,11 @@ class NumberConstraint(ValueConstraint):
         return ((stripped != "" and stripped != ".") or
                 (self.allow_decimal and stripped.find('.') != -1))
 
+    def clone(self):
+        clone = NumberConstraint(self.allow_decimal)
+        clone.buffer = self.buffer
+        return clone
+
 
 class IntConstraint(NumberConstraint):
     def __init__(self):
@@ -84,3 +101,6 @@ class FreeStringConstraint(ValueConstraint):
 
     def close(self) -> bool:
         return True
+    
+    def clone(self):
+        return self

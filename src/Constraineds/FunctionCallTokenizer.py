@@ -93,9 +93,36 @@ class FunctionCallGrammar:
             return self.active_value_constraint.close()
         return True
 
-    def check_step(self, token: str) -> bool:
-        temp_json_tokenizer = self.json.clone()
-        return temp_json_tokenizer.check_token(token)
+    def clone(self) -> "FunctionCallGrammar":
+        result = FunctionCallGrammar(self.function_schemas)
+        # self.function_schemas es compartido (solo lectura), no hace falta copiarlo profundo
 
-    def apply_token(self, token: str):
-        self.json.check_token(token)
+        result.json.stack = self.json.stack.copy()
+        result.json.state = self.json.state
+        result.json.escaped = self.json.escaped
+
+        result.phase = self.phase
+        result.active_schema = self.active_schema
+        result.current_param = self.current_param
+
+        result.name_constraint.buffer = self.name_constraint.buffer
+        result.active_value_constraint = (
+            self.active_value_constraint.clone()
+            if self.active_value_constraint is not None
+            else None
+        )
+        return result
+
+    def check_step(self, token: str) -> bool:
+        temp = self.clone()
+        return temp.apply_token(token)
+
+    def apply_token(self, token: str) -> bool:
+        return self.json.check_token(token)
+
+    def print_buffer(self):
+        if (self.active_value_constraint is not None):
+            print(f"active value: {self.active_value_constraint.buffer}")
+            print(f"candidate: {self.active_value_constraint.candidates}")
+        else:
+            print("active value is none")
