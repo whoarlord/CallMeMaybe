@@ -119,7 +119,6 @@ class Processor():
         func_tokenizer: FunctionCallGrammar = self.build_func_tokenizer(functions)
         while (func_tokenizer.json.state != func_tokenizer.json.DONE and iter < 500):
             logits = self.get_logits(tensor)
-            func_tokenizer.print_buffer()
             logits = self.process_valid_logits(logits, func_tokenizer)
             logits = self.apply_softmax(logits)
             actual_word = np.argmax(logits)
@@ -130,7 +129,6 @@ class Processor():
                 break
             print(f"before adding token: {self.vocab.get(actual_word)}")
             func_tokenizer.apply_token(self.vocab.get(actual_word))
-            # func_tokenizer.print_buffer()
             self.print_text(tensor_result)
             iter += 1
         result = self.decode(tensor_result)

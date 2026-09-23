@@ -120,9 +120,3 @@ class FunctionCallGrammar:
 
     def apply_token(self, token: str) -> bool:
         return self.json.check_token(token)
-
-    def print_buffer(self):
-        if (self.active_value_constraint is not None):
-            print(f"active value: {self.active_value_constraint.buffer}")
-        else:
-            print("active value is none")
