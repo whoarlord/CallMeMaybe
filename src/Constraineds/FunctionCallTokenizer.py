@@ -46,9 +46,9 @@ class FunctionCallGrammar:
             return PrefixTrieConstraint(param_schema.enum_values)
         if schema_type == "number" or schema_type == "num":
             return NumberConstraint()
-        if schema_type == "int" or schema_type == "integer":
+        if schema_type == "integer" or schema_type == "int":
             return IntConstraint()
-        if schema_type == "boolean" or schema_type == "integer":
+        if schema_type == "boolean" or schema_type == "bool":
             return PrefixTrieConstraint(self.BOOL_CANDIDATES)
         return FreeStringConstraint()
 

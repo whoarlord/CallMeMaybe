@@ -78,8 +78,6 @@ class JsonTokenizer:
             if char == '"':
                 if self._on_value_enter and not self._on_value_enter('string'):
                     return False
-                if self._on_value_char and not self._on_value_char(char):
-                    return False
                 self.state = self.STRING_VALUE
                 return True
             if char.isdigit() or char == '-':
