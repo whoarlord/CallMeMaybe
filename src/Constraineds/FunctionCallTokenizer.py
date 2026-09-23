@@ -40,14 +40,15 @@ class FunctionCallGrammar:
     def _constraint_for_param(self, schema_type: str, kind: str):
         """Elige el constraint correcto según el
         tipo declarado en el schema."""
+        schema_type = schema_type.lower()
         if schema_type == "enum":
             param_schema = self.active_schema.parameters[self.current_param]
             return PrefixTrieConstraint(param_schema.enum_values)
-        if schema_type == "number":
+        if schema_type == "number" or schema_type == "num":
             return NumberConstraint()
-        if schema_type == "int":
+        if schema_type == "int" or schema_type == "integer":
             return IntConstraint()
-        if schema_type == "boolean":
+        if schema_type == "boolean" or schema_type == "integer":
             return PrefixTrieConstraint(self.BOOL_CANDIDATES)
         return FreeStringConstraint()
 
@@ -58,7 +59,6 @@ class FunctionCallGrammar:
             return kind == 'string'
 
         if self.phase == Phase.IN_PARAMETERS:
-            print(f"KIND: {kind}")
             if self.active_schema is None:
                 return False
             schema = self.active_schema.parameters.get(self.current_param)
