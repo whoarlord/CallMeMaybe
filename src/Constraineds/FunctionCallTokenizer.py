@@ -30,6 +30,7 @@ class FunctionCallGrammar:
         self.name_constraint = PrefixTrieConstraint(
             list(function_schemas.keys()))
         self.active_value_constraint = None
+        self.seen_arg_values: list[str] = []
 
     def _on_key_closed(self, key: str) -> None:
         if key == "parameters":
@@ -90,8 +91,12 @@ class FunctionCallGrammar:
                 self.name_constraint.buffer)
             self.phase = Phase.OTHER
             return self.active_schema is not None
-        if self.active_value_constraint:
-            return self.active_value_constraint.close()
+        if self.phase == Phase.IN_PARAMETERS:
+            self.seen_arg_values.append(self.current_param)
+            if (len(self.seen_arg_values) >= len(self.active_schema.parameters)):
+                self.json.no_more_parameters = True
+            if self.active_value_constraint:
+                return self.active_value_constraint.close()
         return True
 
     def clone(self) -> "FunctionCallGrammar":

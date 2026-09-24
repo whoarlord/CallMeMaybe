@@ -18,6 +18,7 @@ class JsonTokenizer:
         self.stack: list[str] = ['{']
         self.blacklist: set[str] = {'\n', '\t'}
         self.escaped: bool = False
+        self.no_more_parameters: bool = False
 
     def check_token(self, token: str) -> bool:
         """Check if a token is valid for a json output"""
@@ -152,7 +153,7 @@ class JsonTokenizer:
         return False
 
     def _close(self, char: str) -> bool:
-        if char == ',':
+        if char == ',' and not self.no_more_parameters:
             if self.stack and self.stack[-1] == '{':
                 self.state = self.OBJ_OPEN
                 return True
@@ -164,7 +165,8 @@ class JsonTokenizer:
             self.stack.pop()
             self.state = self.AFTER_VALUE if self.stack else self.DONE
             return True
-        if char == ']' and self.stack and self.stack[-1] == '[':
+        if (char == ']' and self.stack and self.stack[-1] == '['
+                and not self.no_more_parameters):
             self.stack.pop()
             self.state = self.AFTER_VALUE if self.stack else self.DONE
             return True
@@ -180,6 +182,7 @@ class JsonTokenizer:
         result.stack = self.stack.copy()
         result.state = self.state
         result.escaped = self.escaped
+        result.no_more_parameters = self.no_more_parameters
         return result
 
     def print_tokenizer(self):

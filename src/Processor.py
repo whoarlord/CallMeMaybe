@@ -129,6 +129,7 @@ class Processor():
                 break
             print(f"before adding token: {self.vocab.get(actual_word)}")
             print(f"phase: {func_tokenizer.phase}")
+            print(f"seen args: {func_tokenizer.seen_arg_values}")
             func_tokenizer.apply_token(self.vocab.get(actual_word))
             self.print_text(tensor_result)
             iter += 1
