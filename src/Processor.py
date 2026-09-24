@@ -128,6 +128,7 @@ class Processor():
             if actual_word in self.eos_ids:
                 break
             print(f"before adding token: {self.vocab.get(actual_word)}")
+            print(f"phase: {func_tokenizer.phase}")
             func_tokenizer.apply_token(self.vocab.get(actual_word))
             self.print_text(tensor_result)
             iter += 1
