@@ -45,6 +45,7 @@ class Processor():
         - The JSON must match exactly this schema:
         {{"prompt": "<request_prompt>", "name": "<function_name>",
         "parameters": {{"<param_name>": "<value>", ...}}}}
+        - The regex must prioritize \\\\ over \\b
 
         Now respond to this request:
         Request: "{prompt}"
