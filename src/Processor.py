@@ -45,12 +45,6 @@ class Processor():
         - The JSON must match exactly this schema:
         {{"prompt": "<request_prompt>", "name": "<function_name>",
         "parameters": {{"<param_name>": "<value>", ...}}}}
-        - "source_string" must be exactly the raw string or sentence to modify,
-        without any changes. Do NOT perform any substitutions
-        or edits yourself inside the JSON values.
-        - Inside any JSON string value, a literal backslash must be written
-        as "\\\\" (two backslashes), never a single "\\". Example: to express
-        the regex \\d+, write "\\\\d+" in the JSON, not "\\d+".
 
         Now respond to this request:
         Request: "{prompt}"
