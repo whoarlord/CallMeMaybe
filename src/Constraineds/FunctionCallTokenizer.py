@@ -42,9 +42,6 @@ class FunctionCallGrammar:
         """Elige el constraint correcto según el
         tipo declarado en el schema."""
         schema_type = schema_type.lower()
-        if schema_type == "enum":
-            param_schema = self.active_schema.parameters[self.current_param]
-            return PrefixTrieConstraint(param_schema.enum_values)
         if schema_type == "number" or schema_type == "num":
             return NumberConstraint()
         if schema_type == "integer" or schema_type == "int":
@@ -103,9 +100,7 @@ class FunctionCallGrammar:
         result = FunctionCallGrammar(self.function_schemas)
         # self.function_schemas es compartido (solo lectura), no hace falta copiarlo profundo
 
-        result.json.stack = self.json.stack.copy()
-        result.json.state = self.json.state
-        result.json.escaped = self.json.escaped
+        result.json = self.json.clone()
 
         result.phase = self.phase
         result.active_schema = self.active_schema
