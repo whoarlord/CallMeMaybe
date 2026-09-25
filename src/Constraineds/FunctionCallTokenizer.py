@@ -78,6 +78,7 @@ class FunctionCallGrammar:
         return True
 
     def _on_value_char(self, char: str) -> bool:
+        print(f"on_value_char: {char!r}, constraint={self.active_value_constraint}")
         if self.active_value_constraint:
             return self.active_value_constraint.feed(char)
         return True
