@@ -100,7 +100,10 @@ class FunctionCallGrammar:
         result = FunctionCallGrammar(self.function_schemas)
         # self.function_schemas es compartido (solo lectura), no hace falta copiarlo profundo
 
-        result.json = self.json.clone()
+        result.json.stack = self.json.stack.copy()
+        result.json.state = self.json.state
+        result.json.escaped = self.json.escaped
+        result.json.no_more_parameters = self.json.no_more_parameters
 
         result.phase = self.phase
         result.active_schema = self.active_schema
