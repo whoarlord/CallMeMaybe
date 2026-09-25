@@ -45,7 +45,12 @@ class Processor():
         - The JSON must match exactly this schema:
         {{"prompt": "<request_prompt>", "name": "<function_name>",
         "parameters": {{"<param_name>": "<value>", ...}}}}
+        - "source_string" must be exactly the raw string or sentence to modify,
+        without any changes. Do NOT perform any substitutions
+        or edits yourself inside the JSON values.
         - The regex values must prioritize \\\\ over other escape chars
+        - choose the function whose description best matches the user's
+        overall intent, not just individual words in the prompt
 
         Now respond to this request:
         Request: "{prompt}"
