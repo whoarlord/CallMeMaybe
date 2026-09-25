@@ -7,6 +7,7 @@ class ParamType(str, Enum):
     NUMBER = "number"
     BOOLEAN = "boolean"
     INT = "integer"
+    OTHER = "other"
 
     @classmethod
     def _missing_(cls, value):
@@ -16,7 +17,7 @@ class ParamType(str, Enum):
             "bool": cls.BOOLEAN,
             "int": cls.INT,
         }
-        return aliases.get(value)
+        return aliases.get(value, cls.OTHER)
 
 
 class ParamSchema(BaseModel):

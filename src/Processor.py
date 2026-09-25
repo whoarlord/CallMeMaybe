@@ -45,9 +45,6 @@ class Processor():
         - The JSON must match exactly this schema:
         {{"prompt": "<request_prompt>", "name": "<function_name>",
         "parameters": {{"<param_name>": "<value>", ...}}}}
-        - "source_string" must be exactly the raw string or sentence to modify,
-        without any changes. Do NOT perform any substitutions
-        or edits yourself inside the JSON values.
         - The regex values must prioritize \\\\ over other escape chars
         - choose the function whose description best matches the user's
         overall intent, not just individual words in the prompt
@@ -127,15 +124,14 @@ class Processor():
             logits = self.process_valid_logits(logits, func_tokenizer)
             logits = self.apply_softmax(logits)
             actual_word = np.argmax(logits)
-            print(f"actual word: {actual_word}")
             tensor.append(actual_word)
             tensor_result.append(actual_word)
             if actual_word in self.eos_ids:
                 break
-            print(f"before adding token: {self.vocab.get(actual_word)}")
+            """ print(f"before adding token: {self.vocab.get(actual_word)}")
             print(f"phase: {func_tokenizer.phase}")
             print(f"seen args: {func_tokenizer.seen_arg_values}")
-            print(f"no more parameteres: {func_tokenizer.json.no_more_parameters}")
+            print(f"no more parameteres: {func_tokenizer.json.no_more_parameters}") """
             func_tokenizer.apply_token(self.vocab.get(actual_word))
             self.print_text(tensor_result)
             iter += 1
