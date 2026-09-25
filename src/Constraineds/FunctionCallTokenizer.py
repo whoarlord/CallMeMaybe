@@ -42,6 +42,7 @@ class FunctionCallGrammar:
         """Elige el constraint correcto según el
         tipo declarado en el schema."""
         schema_type = schema_type.lower()
+        print(f"schema type: {schema_type}")
         if schema_type == "number" or schema_type == "num":
             return NumberConstraint()
         if schema_type == "integer" or schema_type == "int":
