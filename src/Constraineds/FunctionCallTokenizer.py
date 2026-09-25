@@ -49,7 +49,9 @@ class FunctionCallGrammar:
             return IntConstraint()
         if schema_type == "boolean" or schema_type == "bool":
             print("schema type boolean")
-            return PrefixTrieConstraint(self.BOOL_CANDIDATES)
+            result = PrefixTrieConstraint(self.BOOL_CANDIDATES)
+            print(f"resuklt candadtes: {result.candidates}")
+            return result
         return FreeStringConstraint()
 
     def _on_value_enter(self, kind: str) -> bool:
