@@ -26,6 +26,7 @@ class PrefixTrieConstraint(ValueConstraint):
     candidato, y que al cerrar coincida exactamente con uno."""
 
     def __init__(self, candidates: list[str]):
+        print(f"candidates: {candidates}")
         self.candidates = candidates
         self.buffer = ""
 
