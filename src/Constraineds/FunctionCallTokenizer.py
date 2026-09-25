@@ -108,6 +108,7 @@ class FunctionCallGrammar:
         result.phase = self.phase
         result.active_schema = self.active_schema
         result.current_param = self.current_param
+        result.seen_arg_values = self.seen_arg_values.copy()
 
         result.name_constraint.buffer = self.name_constraint.buffer
         result.active_value_constraint = (
