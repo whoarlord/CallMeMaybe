@@ -37,6 +37,7 @@ class PrefixTrieConstraint(ValueConstraint):
         if not any(c.startswith(candidate) for c in self.candidates):
             return False
         self.buffer = candidate
+        print("buffer: " + self.buffer)
         return True
 
     def close(self) -> bool:
