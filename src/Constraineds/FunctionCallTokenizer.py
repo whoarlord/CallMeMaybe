@@ -49,8 +49,6 @@ class FunctionCallGrammar:
             return IntConstraint()
         if schema_type == "boolean":
             result = PrefixTrieConstraint(self.BOOL_CANDIDATES)
-            for tok in ["true", "false", "t", "f", "Ġtrue"]:
-                print(tok, self.check_step(tok))
             return result
         return FreeStringConstraint()
 
