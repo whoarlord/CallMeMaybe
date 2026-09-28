@@ -42,7 +42,6 @@ class FunctionCallGrammar:
     def _constraint_for_param(self, schema_type: str, kind: str):
         """Elige el constraint correcto según el
         tipo declarado en el schema."""
-        print(f"schema_type: {schema_type}")
         schema_type = schema_type.lower()
         if schema_type == "number":
             return NumberConstraint()
@@ -86,7 +85,9 @@ class FunctionCallGrammar:
                 "boolean": "boolean", "bool": "boolean",
             }.get(t, "string")
             if kind != expected:
+                print(f"kind: {kind}")
                 return False
+            
 
             self.active_value_constraint = self._constraint_for_param(t, kind)
             self.active_value_constraint.reset()
