@@ -52,6 +52,8 @@ class PrefixTrieConstraint(ValueConstraint):
 
 class NumberConstraint(ValueConstraint):
     """Para type 'number': dígitos, un único '.', un único '-' inicial."""
+    MAX_INT_DIGITS = 15
+    MAX_FRAC_DIGITS = 10
 
     def __init__(self, allow_decimal: bool = True):
         self.allow_decimal = allow_decimal
@@ -60,15 +62,35 @@ class NumberConstraint(ValueConstraint):
     def reset(self) -> None:
         self.buffer = ""
 
+    def _parts(self) -> tuple[str, str | None]:
+        stripped = self.buffer.lstrip('-')
+        if '.' in stripped:
+            int_part, frac_part = stripped.split('.', 1)
+            return int_part, frac_part
+        return stripped, None
+
     def feed(self, char: str) -> bool:
+        int_part, frac_part = self._parts()
+
         if char == '-':
             if self.buffer != "":
-                return False  # solo válido como primer carácter
-        elif char == '.':
-            if not self.allow_decimal or '.' in self.buffer:
                 return False
-        elif not char.isdigit():
+        elif char == '.':
+            if (not self.allow_decimal or
+                    frac_part is not None or int_part == ""):
+                return False
+        elif char.isdigit():
+            if frac_part is None:
+                if len(int_part) >= self.MAX_INT_DIGITS:
+                    return False
+                if int_part == "0":
+                    return False
+            else:
+                if len(frac_part) >= self.MAX_FRAC_DIGITS:
+                    return False
+        else:
             return False
+
         self.buffer += char
         return True
 
