@@ -108,7 +108,7 @@ class JsonTokenizer:
                 self.state = self.ARR_OPEN
                 return True
             if char in ('t', 'f'):
-                if self._on_value_enter and not self._on_value_enter('bool'):
+                if self._on_value_enter and not self._on_value_enter('boolean'):
                     return False
                 if self._on_value_char and not self._on_value_char(char):
                     return False
