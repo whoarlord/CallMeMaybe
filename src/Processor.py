@@ -60,6 +60,8 @@ class Processor():
             tuple(func_tokenizer.json.stack),
             func_tokenizer.json.escaped,
             func_tokenizer.json.no_more_parameters,
+            func_tokenizer.json.ws_run,
+            func_tokenizer.json._key_buffer,
             func_tokenizer.phase,
             func_tokenizer.current_param,
             getattr(func_tokenizer.active_value_constraint, "buffer", None),

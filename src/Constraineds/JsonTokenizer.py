@@ -38,7 +38,6 @@ class JsonTokenizer:
     def step(self, char: str, escaped: bool = False) -> bool:
         if char in (' ', '\t', '\n'):
             if self.state not in (self.KEY_STRING, self.STRING_VALUE):
-                print(f"ws_run in {self.ws_run}")
                 if self.ws_run >= 1:
                     return False
                 self.ws_run += 1
