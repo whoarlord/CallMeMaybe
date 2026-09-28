@@ -89,7 +89,7 @@ class FunctionCallGrammar:
                 return False
             print(f"kind in constraint: {kind}")
 
-            self.active_value_constraint = self._constraint_for_param(t, kind)
+            self.active_value_constraint = self._constraint_for_param(t, expected)
             self.active_value_constraint.reset()
             return True
 
