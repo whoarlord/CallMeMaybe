@@ -129,7 +129,7 @@ class Processor():
             if actual_word in self.eos_ids:
                 break
             print(f"before adding token: {self.vocab.get(actual_word)}")
-            print(f"phase: {func_tokenizer.phase}")
+            print(f"phase: {func_tokenizer.json.state}")
             print(f"seen args: {func_tokenizer.seen_arg_values}")
             print(f"no more parameteres: {func_tokenizer.json.no_more_parameters}")
             func_tokenizer.apply_token(self.vocab.get(actual_word))
