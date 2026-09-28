@@ -35,9 +35,13 @@ class JsonTokenizer:
         return True
 
     def step(self, char: str, escaped: bool = False) -> bool:
-        if (char in (' ', '\t', '\n')
-                and self.state not in (self.KEY_STRING, self.STRING_VALUE)):
-            return True
+        if char in (' ', '\t', '\n'):
+            if self.state not in (self.KEY_STRING, self.STRING_VALUE):
+                if self.ws_run >= 1:
+                    return False
+                self.ws_run += 1
+                return True
+        self.ws_run = 0
 
         s = self.state
 
@@ -155,7 +159,7 @@ class JsonTokenizer:
             if self._on_value_closed and not self._on_value_closed():
                 return False
             return self._close(char)
-    
+
         if s == self.BOOL:
             if char.isalpha():
                 if self._on_value_char and not self._on_value_char(char):
