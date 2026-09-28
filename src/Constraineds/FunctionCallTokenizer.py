@@ -120,6 +120,8 @@ class FunctionCallGrammar:
         result.json.state = self.json.state
         result.json.escaped = self.json.escaped
         result.json.no_more_parameters = self.json.no_more_parameters
+        result.json.ws_run = self.json.ws_run
+        result.json._key_buffer = self.json._key_buffer
 
         result.phase = self.phase
         result.active_schema = self.active_schema
