@@ -1,6 +1,7 @@
 class JsonTokenizer:
     START, OBJ_OPEN, KEY_STRING, AFTER_KEY, AFTER_COLON = range(5)
     STRING_VALUE, AFTER_VALUE, NUMBER, ARR_OPEN, DONE = range(5, 10)
+    BOOL = 10
 
     ESCAPE_CHARS = {'"', '\\', '/', 'b', 'f', 'n', 'r', 't', 'u'}
 
@@ -96,8 +97,12 @@ class JsonTokenizer:
                 self.stack.append('[')
                 self.state = self.ARR_OPEN
                 return True
-            if char in ('t', 'f', 'n'):
-                self.state = self.AFTER_VALUE
+            if char in ('t', 'f'):
+                if self._on_value_enter and not self._on_value_enter('bool'):
+                    return False
+                if self._on_value_char and not self._on_value_char(char):
+                    return False
+                self.state = self.BOOL
                 return True
             return False
 
@@ -140,6 +145,15 @@ class JsonTokenizer:
 
         if s == self.NUMBER:
             if char.isdigit() or char == '.':
+                if self._on_value_char and not self._on_value_char(char):
+                    return False
+                return True
+            if self._on_value_closed and not self._on_value_closed():
+                return False
+            return self._close(char)
+    
+        if s == self.BOOL:
+            if char.isalpha():
                 if self._on_value_char and not self._on_value_char(char):
                     return False
                 return True

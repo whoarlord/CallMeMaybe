@@ -42,15 +42,12 @@ class FunctionCallGrammar:
         """Elige el constraint correcto según el
         tipo declarado en el schema."""
         schema_type = schema_type.lower()
-        print(f"schema type: {schema_type}")
-        if schema_type == "number" or schema_type == "num":
+        if schema_type == "number":
             return NumberConstraint()
-        if schema_type == "integer" or schema_type == "int":
+        if schema_type == "integer":
             return IntConstraint()
-        if schema_type == "boolean" or schema_type == "bool":
-            print("schema type boolean")
+        if schema_type == "boolean":
             result = PrefixTrieConstraint(self.BOOL_CANDIDATES)
-            print(f"resuklt candadtes: {result.candidates}")
             return result
         return FreeStringConstraint()
 
@@ -63,16 +60,25 @@ class FunctionCallGrammar:
         if self.phase == Phase.IN_PARAMETERS:
             if self.active_schema is None:
                 return False
+
+            if kind in ('object', 'array'):
+                return kind == 'object' and self.current_param is None
+
             schema = self.active_schema.parameters.get(self.current_param)
             if schema is None:
                 return False
 
-            expects_string_syntax = schema.type in ("string", "enum")
-            if expects_string_syntax != (kind == 'string'):
+            t = schema.type.lower()
+            expected = {
+                "string": "string", "enum": "string",
+                "number": "number", "num": "number",
+                "integer": "integer", "int": "integer",
+                "boolean": "boolean", "bool": "boolean",
+            }.get(t, "string")
+            if kind != expected:
                 return False
 
-            self.active_value_constraint = self._constraint_for_param(
-                schema.type, kind)
+            self.active_value_constraint = self._constraint_for_param(t, kind)
             self.active_value_constraint.reset()
             return True
 
