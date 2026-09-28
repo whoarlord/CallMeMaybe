@@ -35,6 +35,7 @@ class FunctionCallGrammar:
     def _on_key_closed(self, key: str) -> None:
         if key == "parameters":
             self.phase = Phase.IN_PARAMETERS
+            self.current_param = None
         elif self.phase == Phase.IN_PARAMETERS:
             self.current_param = key
 
@@ -52,6 +53,11 @@ class FunctionCallGrammar:
         return FreeStringConstraint()
 
     def _on_value_enter(self, kind: str) -> bool:
+        if kind in ('object', 'array'):
+            if self.phase == Phase.IN_PARAMETERS:
+                return kind == 'object' and self.current_param is None
+            return True
+
         if self.phase == Phase.EXPECT_NAME:
             self.name_constraint.reset()
             self.active_value_constraint = self.name_constraint

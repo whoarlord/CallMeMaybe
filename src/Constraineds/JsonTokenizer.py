@@ -90,10 +90,14 @@ class JsonTokenizer:
                 self.state = self.NUMBER
                 return True
             if char == '{':
+                if self._on_value_enter and not self._on_value_enter('object'):
+                    return False
                 self.stack.append('{')
                 self.state = self.OBJ_OPEN
                 return True
             if char == '[':
+                if self._on_value_enter and not self._on_value_enter('array'):
+                    return False
                 self.stack.append('[')
                 self.state = self.ARR_OPEN
                 return True
