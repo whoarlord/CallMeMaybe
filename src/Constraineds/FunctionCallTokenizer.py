@@ -49,10 +49,13 @@ class FunctionCallGrammar:
             return IntConstraint()
         if schema_type == "boolean":
             result = PrefixTrieConstraint(self.BOOL_CANDIDATES)
+            for tok in ["true", "false", "t", "f", "Ġtrue"]:
+                print(tok, self.check_step(tok))
             return result
         return FreeStringConstraint()
 
     def _on_value_enter(self, kind: str) -> bool:
+        print(f"enter kind={kind} phase={self.phase} param={self.current_param}")
         if kind in ('object', 'array'):
             if self.phase == Phase.IN_PARAMETERS:
                 return kind == 'object' and self.current_param is None

@@ -23,13 +23,14 @@ class JsonTokenizer:
         self.ws_run = 0
 
     def check_token(self, token: str) -> bool:
-        """Check if a token is valid for a json output"""
         escaped = self.escaped
+        ws_run = self.ws_run
         if isinstance(token, str):
             token = token.replace('Ġ', ' ')
             for ch in token:
                 if not self.step(ch, escaped):
                     self.escaped = escaped
+                    self.ws_run = ws_run
                     return False
                 escaped = (ch == '\\') and not escaped
         self.escaped = escaped
