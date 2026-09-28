@@ -20,6 +20,7 @@ class JsonTokenizer:
         self.blacklist: set[str] = {'\n', '\t'}
         self.escaped: bool = False
         self.no_more_parameters: bool = False
+        self.ws_run = 0
 
     def check_token(self, token: str) -> bool:
         """Check if a token is valid for a json output"""
@@ -205,6 +206,7 @@ class JsonTokenizer:
         result.state = self.state
         result.escaped = self.escaped
         result.no_more_parameters = self.no_more_parameters
+        result.ws_run = self.ws_run
         return result
 
     def print_tokenizer(self):
