@@ -1,6 +1,7 @@
 import sys
 from . import Small_LLM_Model, Processor, Parser
 import json
+from pydantic import ValidationError
 
 
 def check_validation():
@@ -23,9 +24,13 @@ if '__main__' == __name__:
             arguments.update({'input': sys.argv[i + 1]})
         elif (sys.argv[i] == '--output'):
             arguments.update({'output': sys.argv[i + 1]})
-    parser: Parser = Parser(**arguments)
+    try:
+        parser: Parser = Parser(**arguments)
+    except ValidationError as e:
+        print(f"error while validating pydantic: {e}")
+        exit(1)
     if (parser.check_files_correctness()):
-        exit()
+        exit(1)
     llm: Small_LLM_Model = Small_LLM_Model()
     processor: Processor = Processor(llm)
     prompts: list[dict] = parser.get_input_json()

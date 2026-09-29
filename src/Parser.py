@@ -13,11 +13,18 @@ class Parser(BaseModel):
         if (self.functions_definition.startswith("/")
                 or self.input.startswith("/")
                 or self.output.startswith("/")):
-            raise ValueError("input parameterss must not start with /")
+            raise ValueError("input parameters must not start with /")
         if (self.functions_definition.startswith("..")
                 or self.input.startswith("..")
                 or self.output.startswith("..")):
-            raise ValueError("input parameterss must not start with ..")
+            raise ValueError("input parameters must not start with ..")
+        if (not self.output.startswith('data/output')):
+            raise ValueError(
+                "output parameter must start with data/output/ ..")
+        if (not self.functions_definition.startswith('data/input')
+                and not self.input.startswith('data/input')):
+            raise ValueError(
+                "input parameters must start with data/input/ ..")
         return self
 
     def get_functions_definition_json(self):
