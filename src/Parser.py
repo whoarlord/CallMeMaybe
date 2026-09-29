@@ -65,7 +65,7 @@ class Parser(BaseModel):
                 if (not function.get('name')
                     or not function.get('parameters')
                     or not function.get('description')
-                        or not function.get('return')):
+                        or not function.get('returns')):
                     raise Exception('invalid keys')
 
                 if (not all('type' in v and v['type'] in parameter_values
