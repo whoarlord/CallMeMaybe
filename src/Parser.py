@@ -68,7 +68,7 @@ class Parser(BaseModel):
             if (result):
                 print("function calling file is correct")
             for prompt in result:
-                if (not in prompt.get('prompt')):
+                if (not prompt.get('prompt')):
                     raise Exception('invalid prompt key')
         except Exception as e:
             print(f"there was an error with the function callings file: {e}")
