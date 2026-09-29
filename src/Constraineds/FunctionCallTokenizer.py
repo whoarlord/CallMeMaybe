@@ -53,7 +53,6 @@ class FunctionCallGrammar:
         return FreeStringConstraint()
 
     def _on_value_enter(self, kind: str) -> bool:
-        print(f"enter kind={kind} phase={self.phase} param={self.current_param}")
         if kind in ('object', 'array'):
             if self.phase == Phase.IN_PARAMETERS:
                 return kind == 'object' and self.current_param is None
