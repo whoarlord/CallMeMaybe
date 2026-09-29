@@ -27,6 +27,9 @@ class Parser(BaseModel):
             raise ValueError(
                 "input parameters must start with data/input/ ..")
 
+        print("input file: " + self.input)
+        print("output file: " + self.output)
+        print("functions_definition file: " + self.functions_definition)
         if (not os.path.isfile(self.input)
                 or not os.path.isfile(self.functions_definition)):
             raise ValueError("input files must be files")
