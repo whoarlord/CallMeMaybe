@@ -1,6 +1,7 @@
 from pydantic import BaseModel, model_validator
 from typing import Any
 import json
+import os
 
 
 class Parser(BaseModel):
@@ -22,9 +23,18 @@ class Parser(BaseModel):
             raise ValueError(
                 "output parameter must start with data/output/ ..")
         if (not self.functions_definition.startswith('data/input')
-                and not self.input.startswith('data/input')):
+                or not self.input.startswith('data/input')):
             raise ValueError(
                 "input parameters must start with data/input/ ..")
+
+        if (not os.path.isfile(self.input)
+                or not os.path.isfile(self.functions_definition)):
+            raise ValueError("input files must be files")
+
+        if (not os.access(self.input, os.R_OK)
+            or not os.access(self.functions_definition, os.R_OK)
+                or not os.access(self.output, os.W_OK)):
+            raise ValueError("files must have the correct permisions")
         return self
 
     def get_functions_definition_json(self):
@@ -48,8 +58,6 @@ class Parser(BaseModel):
                             'boolean', 'bool', 'str', 'string']
         try:
             result = self.get_functions_definition_json()
-            if (result):
-                print("function definition file is correct")
             for function in result:
                 if (not function.get('name')
                     or not function.get('parameters')
@@ -65,16 +73,9 @@ class Parser(BaseModel):
             return 1
         try:
             result = self.get_input_json()
-            if (result):
-                print("function calling file is correct")
             for prompt in result:
                 if (not prompt.get('prompt')):
                     raise Exception('invalid prompt key')
         except Exception as e:
             print(f"there was an error with the function callings file: {e}")
-            return 1
-        try:
-            open(self.input, 'r', encoding='utf-8')
-        except Exception as e:
-            print(f"there was an error with the output file: {e}")
             return 1
