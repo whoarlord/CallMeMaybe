@@ -3,12 +3,6 @@ from . import Small_LLM_Model, Processor, Parser
 import json
 from pydantic import ValidationError
 
-
-def check_validation():
-    """ function for checking directories and files """
-    print('validate')
-
-
 if '__main__' == __name__:
     argc: int = len(sys.argv)
 

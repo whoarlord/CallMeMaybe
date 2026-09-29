@@ -83,7 +83,8 @@ class FunctionCallGrammar:
             }.get(t, "string")
             if kind != expected:
                 return False
-
+            if (t == 'integer' and expected == 'number'):
+                expected = 'integer'
             self.active_value_constraint = self._constraint_for_param(t, expected)
             self.active_value_constraint.reset()
             return True
