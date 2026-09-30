@@ -89,7 +89,7 @@ class FunctionCallGrammar:
 
             if kind != expected:
                 return False
-            self.active_value_constraint = self._constraint_for_param(t, expected)
+            self.active_value_constraint = self._constraint_for_param(expected)
             self.active_value_constraint.reset()
             return True
 
