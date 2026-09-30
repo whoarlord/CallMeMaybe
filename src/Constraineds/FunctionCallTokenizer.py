@@ -75,8 +75,6 @@ class FunctionCallGrammar:
                 return False
 
             t = schema.type.lower()
-            print("t: " + t)
-            print("kind: " + kind)
             if (t == 'integer' and kind == 'number'):
                 print("kind to integer")
                 kind = 'integer'
