@@ -39,7 +39,7 @@ class FunctionCallGrammar:
         elif self.phase == Phase.IN_PARAMETERS:
             self.current_param = key
 
-    def _constraint_for_param(self, schema_type: str, kind: str):
+    def _constraint_for_param(self, schema_type: str):
         """Elige el constraint correcto según el
         tipo declarado en el schema."""
         schema_type = schema_type.lower()
@@ -83,10 +83,11 @@ class FunctionCallGrammar:
                 "integer": "integer", "int": "integer",
                 "boolean": "boolean", "bool": "boolean",
             }.get(t, "string")
+            if (t == 'integer' and expected == 'number'):
+                print("expected to integer")
+                expected = 'integer'
             if kind != expected:
                 return False
-            if (t == 'integer' and expected == 'number'):
-                expected = 'integer'
             self.active_value_constraint = self._constraint_for_param(t, expected)
             self.active_value_constraint.reset()
             return True
