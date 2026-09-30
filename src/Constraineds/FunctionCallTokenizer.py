@@ -77,15 +77,16 @@ class FunctionCallGrammar:
             t = schema.type.lower()
             print("t: " + t)
             print("kind: " + kind)
+            if (t == 'integer' and kind == 'number'):
+                print("kind to integer")
+                kind = 'integer'
             expected = {
                 "string": "string", "enum": "string",
                 "number": "number", "num": "number",
                 "integer": "integer", "int": "integer",
                 "boolean": "boolean", "bool": "boolean",
             }.get(t, "string")
-            if (t == 'integer' and expected == 'number'):
-                print("expected to integer")
-                expected = 'integer'
+
             if kind != expected:
                 return False
             self.active_value_constraint = self._constraint_for_param(t, expected)
