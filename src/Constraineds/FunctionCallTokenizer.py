@@ -75,6 +75,8 @@ class FunctionCallGrammar:
                 return False
 
             t = schema.type.lower()
+            print("t: " + t)
+            print("kind: " + kind)
             expected = {
                 "string": "string", "enum": "string",
                 "number": "number", "num": "number",
