@@ -1,0 +1,9 @@
+[
+  {
+    "prompt": "Is 4 an even number?",
+    "name": "fn_is_even",
+    "parameters": {
+      "n": true
+    }
+  }
+]
