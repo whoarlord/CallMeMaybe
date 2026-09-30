@@ -31,8 +31,11 @@ if '__main__' == __name__:
     functions: list[dict] = parser.get_functions_definition_json()
     output: list[dict] = []
     for prompt in prompts:
-        result = processor.process_prompt(prompt,functions)
-        print(result)
-        output.append(json.loads(result))
+        try:
+            result = processor.process_prompt(prompt,functions)
+            print(result)
+            output.append(json.loads(result))
+        except ValueError as e:
+            print("there was an error while processing prompt: " + e.args[0])
     print(f"output: {output}")
     parser.load_in_output(output)

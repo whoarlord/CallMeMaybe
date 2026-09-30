@@ -3,6 +3,7 @@ from .Constraineds import (FunctionCallGrammar, FunctionSchema)
 import numpy as np
 import json
 import textwrap
+import time
 
 
 class Processor():
@@ -112,7 +113,9 @@ class Processor():
         data = {"prompt": value}
         return json.dumps(data)
 
-    def process_prompt(self, prompt: dict, functions: list[dict]):
+    def process_prompt(self, prompt: dict, functions: list[dict],
+                       timeout_total: int = 10):
+        deadline = time.monotonic() + timeout_total
         start: str = self.get_start_prompt(prompt)[:-1] + ', "name":'
         prompt_str: str = self.improve_prompt(prompt.get('prompt'), functions)
         tensor: list[int] = self.encode_tensor(prompt_str + start)
@@ -121,6 +124,9 @@ class Processor():
         iter: int = 0
         func_tokenizer: FunctionCallGrammar = self.build_func_tokenizer(functions)
         while (func_tokenizer.json.state != func_tokenizer.json.DONE and iter < 500):
+            time_left = deadline - time.monotonic()
+            if time_left <= 0:
+                raise ValueError("timeout thwon")
             logits = self.get_logits(tensor)
             logits = self.process_valid_logits(logits, func_tokenizer)
             logits = self.apply_softmax(logits)
@@ -129,10 +135,6 @@ class Processor():
             tensor_result.append(actual_word)
             if actual_word in self.eos_ids:
                 break
-            print(f"before adding token: {self.vocab.get(actual_word)}")
-            print(f"phase: {func_tokenizer.json.state}")
-            print(f"seen args: {func_tokenizer.seen_arg_values}")
-            print(f"no more parameteres: {func_tokenizer.json.no_more_parameters}")
             func_tokenizer.apply_token(self.vocab.get(actual_word))
             self.print_text(tensor_result)
             iter += 1
