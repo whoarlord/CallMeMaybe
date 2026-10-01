@@ -8,7 +8,8 @@ import numpy.typing as npt
 
 from . import Small_LLM_Model
 from .Constraints import FunctionCallGrammar
-from .PydanticModels import PromptEntry, FunctionDef, index_functions
+from .PydanticModels import (PromptEntry, FunctionDef,
+                             FunctionCall, index_functions)
 
 
 class Processor:
@@ -168,7 +169,7 @@ class Processor:
 
     def process_prompt(self, prompt: PromptEntry,
                        functions: list[FunctionDef],
-                       timeout_total: float = 90) -> str:
+                       timeout_total: float = 90) -> FunctionCall:
         """Generate the function call for a prompt.
 
         Tokens are generated greedily until the JSON is complete.
@@ -207,4 +208,5 @@ class Processor:
             self.print_text(tensor_result)
             iteration += 1
         result = self.decode(tensor_result)
-        return result.strip()
+        call = FunctionCall.model_validate_json(result)
+        return call
