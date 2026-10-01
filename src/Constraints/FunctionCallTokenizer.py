@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Protocol
 
 from .JsonTokenizer import JsonTokenizer
-from ..PydanticModels import FunctionDef
+from .. import FunctionDef
 from .PrefixTrieConstraint import (
     PrefixTrieConstraint, NumberConstraint,
     IntConstraint, FreeStringConstraint,
