@@ -40,22 +40,22 @@ class ParamSchema(BaseModel):
     type: ParamType
 
 
-class FunctionSchema(BaseModel):
+class FunctionDef(BaseModel):
     """Schema of a callable function: its name and its parameters."""
 
     name: str
     parameters: dict[str, ParamSchema]
 
     @classmethod
-    def from_dict(cls, fn: dict[str, Any]) -> "FunctionSchema":
-        """Build a FunctionSchema from a raw dictionary.
+    def from_dict(cls, fn: dict[str, Any]) -> "FunctionDef":
+        """Build a FunctionDef from a raw dictionary.
 
         Args:
             fn: Dictionary with a 'name' key and a 'parameters' mapping
                 from parameter name to a definition containing 'type'.
 
         Returns:
-            The validated FunctionSchema.
+            The validated FunctionDef.
         """
         props: dict[str, Any] = fn.get("parameters", {})
 

@@ -160,7 +160,7 @@ Como un token solo se acepta si **todos** sus caracteres son aceptados, el model
 
 * **Las restricciones de tipos están contenidas en clases pequeñas.** Añadir un tipo significa añadir una subclase de `ValueConstraint` y una línea en el mapeo de tipos.
 
-* **Pydantic para esquemas y rutas.** `FunctionSchema`/`ParamType` normalizan alias (`int`, `bool`, ...), y `Parser` valida las rutas y los permisos antes de ejecutar nada.
+* **Pydantic para esquemas y rutas.** `FunctionDef`/`ParamType` normalizan alias (`int`, `bool`, ...), y `Parser` valida las rutas y los permisos antes de ejecutar nada.
 
 * **Tipado estricto y linting.** El código pasa `flake8` y `mypy --strict`, con docstrings en todas las clases y métodos públicos.
 

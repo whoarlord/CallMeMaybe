@@ -1,13 +1,14 @@
 import json
 import textwrap
 import time
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import numpy.typing as npt
 
 from . import Small_LLM_Model
-from .Constraineds import FunctionCallGrammar, FunctionSchema
+from .Constraints import FunctionCallGrammar
+from .PydanticModels import PromptEntry, FunctionDef, index_functions
 
 
 class Processor:
@@ -37,7 +38,7 @@ class Processor:
 
     def get_logits(self, tensor: list[int]) -> list[float]:
         """Return the next-token logits for the given token ids."""
-        return self.llm.get_logits_from_input_ids(tensor)
+        return cast(list[float], self.llm.get_logits_from_input_ids(tensor))
 
     @staticmethod
     def apply_softmax(logits: list[float]) -> npt.NDArray[np.float64]:
@@ -53,7 +54,7 @@ class Processor:
 
     def decode(self, tensor: list[int]) -> str:
         """Decode a list of token ids into text."""
-        return self.llm.decode(tensor)
+        return cast(str, self.llm.decode(tensor))
 
     def get_vocab(self) -> dict[int, str]:
         """Load the vocabulary file and invert it.
@@ -67,7 +68,7 @@ class Processor:
         return {v: k for k, v in raw.items()}
 
     def improve_prompt(self, prompt: str,
-                       functions: list[dict[str, Any]]) -> str:
+                       functions: list[FunctionDef]) -> str:
         """Build the full prompt sent to the model.
 
         Args:
@@ -154,23 +155,19 @@ class Processor:
         print(f"result: {result}")
 
     def build_func_tokenizer(
-            self, functions: list[dict[str, Any]]) -> FunctionCallGrammar:
+            self, functions: list[FunctionDef]) -> FunctionCallGrammar:
         """Create a grammar from the raw function definitions."""
-        schemas = {
-            fn["name"]: FunctionSchema.from_dict(fn)
-            for fn in functions
-        }
-        return FunctionCallGrammar(schemas)
+        return FunctionCallGrammar(index_functions(functions))
 
     @staticmethod
-    def get_start_prompt(prompt: dict[str, Any]) -> str:
+    def get_start_prompt(prompt: PromptEntry) -> str:
         """Return the JSON text that starts the model's answer."""
-        value = prompt.get('prompt')
+        value = prompt.prompt
         data = {"prompt": value}
         return json.dumps(data)
 
-    def process_prompt(self, prompt: dict[str, Any],
-                       functions: list[dict[str, Any]],
+    def process_prompt(self, prompt: PromptEntry,
+                       functions: list[FunctionDef],
                        timeout_total: float = 10) -> str:
         """Generate the function call for a prompt.
 
@@ -189,13 +186,13 @@ class Processor:
         """
         deadline = time.monotonic() + timeout_total
         start: str = self.get_start_prompt(prompt)[:-1] + ', "name":'
-        prompt_str: str = self.improve_prompt(prompt.get('prompt'), functions)
+        prompt_str: str = self.improve_prompt(prompt.prompt, functions)
         tensor: list[int] = self.encode_tensor(prompt_str + start)
         tensor_result: list[int] = self.encode_tensor(start)
         func_tokenizer = self.build_func_tokenizer(functions)
         iteration = 0
         while (func_tokenizer.json.state != func_tokenizer.json.DONE
-                and iteration < 500):
+                and iteration < 150):
             if deadline - time.monotonic() <= 0:
                 raise ValueError("timeout thrown")
             logits = self.get_logits(tensor)

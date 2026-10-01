@@ -1,8 +1,9 @@
 import json
 import os
-from typing import Any
 
 from pydantic import BaseModel, model_validator
+from .PydanticModels import (FunctionDef, FunctionsFile, PromptEntry,
+                             PromptsFile, FunctionCall)
 
 
 class Parser(BaseModel):
@@ -49,69 +50,29 @@ class Parser(BaseModel):
             raise ValueError("files must have the correct permisions")
         return self
 
-    def get_functions_definition_json(self) -> list[dict[str, Any]]:
-        """Load the functions definition file.
+    def get_functions_definition(self) -> list[FunctionDef]:
+        """Load the input (functions) file.
 
         Returns:
-            The parsed JSON content of the functions definition file.
+            The parsed JSON content of the input file.
         """
-        result: list[dict[str, Any]]
         with open(self.functions_definition, 'r', encoding='utf-8') as file:
-            result = json.load(file)
-        return result
+            return FunctionsFile.model_validate_json(file.read()).root
 
-    def get_input_json(self) -> list[dict[str, Any]]:
+    def get_input(self) -> list[PromptEntry]:
         """Load the input (prompts) file.
 
         Returns:
             The parsed JSON content of the input file.
         """
-        result: list[dict[str, Any]]
         with open(self.input, 'r', encoding='utf-8') as file:
-            result = json.load(file)
-        return result
+            return PromptsFile.model_validate_json(file.read()).root
 
-    def load_in_output(self, output: list[dict[str, Any]]) -> None:
-        """Write the results to the output file as indented JSON.
-
-        Args:
-            output: The list of results to serialize.
-        """
-        with open(self.output, 'w', encoding='utf-8') as file:
-            json.dump(output, file, indent=2)
-
-    def check_files_correctness(self) -> int:
-        """Check the structure of the functions and input files.
-
-        Prints a message describing the first problem found.
+    def load_in_output(self, output: list[FunctionCall]) -> None:
+        """Load the input (prompts) file.
 
         Returns:
-            0 if both files are valid, 1 otherwise.
+            The parsed JSON content of the input file.
         """
-        parameter_values = ['number', 'num', 'integer', 'int',
-                            'boolean', 'bool', 'str', 'string']
-        try:
-            functions = self.get_functions_definition_json()
-            for function in functions:
-                if (not function.get('name')
-                        or not function.get('parameters')
-                        or not function.get('description')
-                        or not function.get('returns')):
-                    raise ValueError('invalid keys')
-
-                if not all('type' in v and v['type'] in parameter_values
-                           for v in function['parameters'].values()):
-                    raise ValueError('invalid parameters')
-        except Exception as e:
-            print("there was an error with the function definition "
-                  f"file: {e}")
-            return 1
-        try:
-            prompts = self.get_input_json()
-            for prompt in prompts:
-                if not prompt.get('prompt'):
-                    raise ValueError('invalid prompt key')
-        except Exception as e:
-            print(f"there was an error with the function callings file: {e}")
-            return 1
-        return 0
+        with open(self.output, 'w', encoding='utf-8') as file:
+            json.dump([c.model_dump() for c in output], file, indent=2)

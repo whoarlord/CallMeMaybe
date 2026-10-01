@@ -2,11 +2,12 @@ import sys
 from . import Small_LLM_Model, Processor, Parser
 import json
 from pydantic import ValidationError
+from PydanticModels import FunctionDef, PromptEntry, FunctionCall
 
 if '__main__' == __name__:
     argc: int = len(sys.argv)
 
-    arguments: dict = {
+    arguments: dict[str, str] = {
         'functions_definition': 'data/input/functions_definition.json',
         'input': 'data/input/function_calling_tests.json',
         'output': 'data/output/output.json'
@@ -20,19 +21,17 @@ if '__main__' == __name__:
             arguments.update({'output': sys.argv[i + 1]})
     try:
         parser: Parser = Parser(**arguments)
-    except ValidationError as e:
+    except (OSError, ValidationError, ValueError) as e:
         print(f"error while validating pydantic: {e}")
-        exit(1)
-    if (parser.check_files_correctness()):
         exit(1)
     llm: Small_LLM_Model = Small_LLM_Model()
     processor: Processor = Processor(llm)
-    prompts: list[dict] = parser.get_input_json()
-    functions: list[dict] = parser.get_functions_definition_json()
-    output: list[dict] = []
+    prompts: list[PromptEntry] = parser.get_input()
+    functions: list[FunctionDef] = parser.get_functions_definition()
+    output: list[FunctionCall] = []
     for prompt in prompts:
         try:
-            result = processor.process_prompt(prompt,functions)
+            result = processor.process_prompt(prompt, functions)
             print(result)
             output.append(json.loads(result))
         except ValueError as e:

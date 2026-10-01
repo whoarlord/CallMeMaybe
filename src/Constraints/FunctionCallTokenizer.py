@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Protocol
 
 from .JsonTokenizer import JsonTokenizer
-from .functionSchema import FunctionSchema
+from ..PydanticModels import FunctionDef
 from .PrefixTrieConstraint import (
     PrefixTrieConstraint, NumberConstraint,
     IntConstraint, FreeStringConstraint,
@@ -42,7 +42,7 @@ class FunctionCallGrammar:
 
     BOOL_CANDIDATES = ["true", "false"]
 
-    def __init__(self, function_schemas: dict[str, FunctionSchema]) -> None:
+    def __init__(self, function_schemas: dict[str, FunctionDef]) -> None:
         """Initialize the grammar.
 
         Args:
@@ -56,7 +56,7 @@ class FunctionCallGrammar:
             on_value_closed=self._on_value_closed,
         )
         self.phase = Phase.EXPECT_NAME
-        self.active_schema: FunctionSchema | None = None
+        self.active_schema: FunctionDef | None = None
         self.current_param: str | None = None
         self.name_constraint = PrefixTrieConstraint(
             list(function_schemas.keys()))

@@ -24,11 +24,11 @@ clean:
 	rm -rf $(TOCLEAN)
 
 lint:
-	flake8 MazeGen a_maze_ing.py setup.py
-	mypy MazeGen a_maze_ing.py  $(MYPYFLAGS)
+	flake8 src
+	mypy src $(MYPYFLAGS)
 
 lint-strict:
-	flake8 MazeGen a_maze_ing.py setup.py
-	mypy MazeGen a_maze_ing.py --strict --ignore-missing-imports
+	flake8 src
+	mypy src --strict --ignore-missing-imports
 
 SILENT: all install run debug build install clean lint lint-strict
