@@ -168,7 +168,7 @@ class Processor:
 
     def process_prompt(self, prompt: PromptEntry,
                        functions: list[FunctionDef],
-                       timeout_total: float = 10) -> str:
+                       timeout_total: float = 90) -> str:
         """Generate the function call for a prompt.
 
         Tokens are generated greedily until the JSON is complete.
