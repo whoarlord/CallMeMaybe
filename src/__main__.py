@@ -32,7 +32,7 @@ if '__main__' == __name__:
     for prompt in prompts:
         try:
             result: FunctionCall = processor.process_prompt(prompt, functions)
-            output.append(json.loads(result))
+            output.append(result)
         except ValueError as e:
             print("there was an error while processing prompt: " + e.args[0])
     print(f"output: {output}")
