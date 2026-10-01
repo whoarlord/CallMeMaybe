@@ -78,7 +78,7 @@ class Processor:
         Returns:
             The prompt with the functions, the rules and the request.
         """
-        functions_json = json.dumps(functions)
+        functions_json = json.dumps([fn.model_dump() for fn in functions])
         return textwrap.dedent(f"""\
         Available functions:
         {functions_json}
