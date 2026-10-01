@@ -2,7 +2,7 @@ import sys
 from . import Small_LLM_Model, Processor, Parser
 import json
 from pydantic import ValidationError
-from PydanticModels import FunctionDef, PromptEntry, FunctionCall
+from .PydanticModels import FunctionDef, PromptEntry, FunctionCall
 
 if '__main__' == __name__:
     argc: int = len(sys.argv)
