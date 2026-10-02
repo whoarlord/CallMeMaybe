@@ -1,6 +1,5 @@
 import sys
 from . import Small_LLM_Model, Processor, Parser
-import json
 from pydantic import ValidationError
 from .PydanticModels import FunctionDef, PromptEntry, FunctionCall
 
@@ -19,15 +18,17 @@ if '__main__' == __name__:
             arguments.update({'input': sys.argv[i + 1]})
         elif (sys.argv[i] == '--output'):
             arguments.update({'output': sys.argv[i + 1]})
+    prompts: list[PromptEntry]
+    functions: list[FunctionDef]
     try:
         parser: Parser = Parser(**arguments)
+        prompts = parser.get_input()
+        functions = parser.get_functions_definition()
     except (OSError, ValidationError, ValueError) as e:
         print(f"error while validating pydantic: {e}")
         exit(1)
     llm: Small_LLM_Model = Small_LLM_Model()
     processor: Processor = Processor(llm)
-    prompts: list[PromptEntry] = parser.get_input()
-    functions: list[FunctionDef] = parser.get_functions_definition()
     output: list[FunctionCall] = []
     for prompt in prompts:
         try:
