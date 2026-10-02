@@ -1,4 +1,4 @@
-from ..llm_sdk.llm_sdk import Small_LLM_Model
+from llm_sdk.llm_sdk import Small_LLM_Model
 from .PydanticModels import (FunctionDef, FunctionsFile, PromptEntry,
                              PromptsFile, FunctionCall)
 from .Parser import Parser

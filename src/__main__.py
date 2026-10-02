@@ -11,13 +11,17 @@ if '__main__' == __name__:
         'input': 'data/input/function_calling_tests.json',
         'output': 'data/output/output.json'
     }
-    for i in range(1, argc, 2):
-        if (sys.argv[i] == '--functions_definition'):
-            arguments.update({'functions_definition': sys.argv[i + 1]})
-        elif (sys.argv[i] == '--input'):
-            arguments.update({'input': sys.argv[i + 1]})
-        elif (sys.argv[i] == '--output'):
-            arguments.update({'output': sys.argv[i + 1]})
+    try:
+        for i in range(1, argc, 2):
+            if (sys.argv[i] == '--functions_definition'):
+                arguments.update({'functions_definition': sys.argv[i + 1]})
+            elif (sys.argv[i] == '--input'):
+                arguments.update({'input': sys.argv[i + 1]})
+            elif (sys.argv[i] == '--output'):
+                arguments.update({'output': sys.argv[i + 1]})
+    except Exception as e:
+        print(f"error while parsing: {e}")
+        exit(1)
     prompts: list[PromptEntry]
     functions: list[FunctionDef]
     try:

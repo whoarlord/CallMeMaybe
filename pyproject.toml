@@ -11,3 +11,11 @@ dependencies = [
     "pydantic>=2.13.4",
     "torch>=2.13.0",
 ]
+
+[tool.uv.workspace]
+members = [
+    "llm_sdk",
+]
+
+[tool.uv.sources]
+llm-sdk = { workspace = true, editable = true }
