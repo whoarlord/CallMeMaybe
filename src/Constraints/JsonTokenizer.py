@@ -261,9 +261,3 @@ class JsonTokenizer:
         result.ws_run = self.ws_run
         result._key_buffer = self._key_buffer
         return result
-
-    def print_tokenizer(self) -> None:
-        """Print the current state, stack and escape flag (debugging)."""
-        print(f"state: {self.state}")
-        print(f"stack: {self.stack}")
-        print(f"escaped: {self.escaped}")

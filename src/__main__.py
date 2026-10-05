@@ -40,5 +40,4 @@ if '__main__' == __name__:
             output.append(result)
         except ValueError as e:
             print("there was an error while processing prompt: " + e.args[0])
-    print(f"output: {output}")
     parser.load_in_output(output)
